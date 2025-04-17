@@ -1,5 +1,6 @@
-from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
+from django.db import IntegrityError
+from django.http import JsonResponse
 from .models import User
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -27,6 +28,10 @@ def register(request):
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "Geçersiz JSON verisi!"})
+        
+        except IntegrityError:
+            # Eğer e-posta adresi zaten varsa
+            return JsonResponse({"success": False, "message": "Bu e-posta ile zaten bir kullanıcı var!"})
 
     return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})
 
@@ -39,7 +44,8 @@ def login_view(request):
         email = data.get('email')
         password = data.get('password')
 
-        user = authenticate(request, username=email, password=password)
+        # E-posta ile doğrulama işlemi
+        user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
