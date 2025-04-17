@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'buszy_app',
     'corsheaders',
 ]
-
+DEBUG = True
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

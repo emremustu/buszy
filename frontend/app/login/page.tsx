@@ -6,40 +6,57 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 
 const LoginPage = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
-    
+    const [mail,setMail]=useState('');
+    const [password,setPassword]=useState('');
+
+
+    const handleSubmit = async (e:React.FormEvent)=>{
+      e.preventDefault();
+
+
+      const data = {
+        email:mail,
+        password,
+      }
+      try {
+        const response = await fetch("http://localhost:8000/api/login/",{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+          },
+          body:JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+          alert("Login success")
+        }
+        else{
+          alert(result.message || "Bir hata oluştu!"); // Hata mesajını burada göster
+        }
+      }
+      catch (error) {
+        console.error("Error during fetch:", error);
+        alert("Bir hata oluştu, lütfen tekrar deneyin."+ error);
+      }
+
+
+    };
+
+
     return (
       <>
-      <Navbar></Navbar>
+      
   
-  
-      <div className='flex flex-row  w-full justify-center '>
+      <div className='flex flex-col h-screen'>
+      <Navbar></Navbar> 
+      
         
-        <div className="flex flex-col items-center  mb-20 ">
+        <div className="flex flex-col items-center h-full justify-center">
           
           <h1 className="text-3xl font-bold mb-5 text-primary mt-12">Signup</h1>
-          <form className="w-[48rem] bg-white shadow-2xl rounded-3xl p-8 grid grid-cols-2 gap-6">
-            <div className="mb-6">
-              <label htmlFor="firstName" className="block text-lg font-medium mb-2">
-                Name
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                placeholder="Type your name"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
-            </div>
-            <div className="mb-6">
-              <label htmlFor="lastName" className="block text-lg font-medium mb-2">
-                Last Name
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                placeholder="Type your last name"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="w-[48rem] bg-white shadow-2xl rounded-3xl p-8 grid grid-cols-2 gap-6">
             <div className="mb-6 col-span-2">
               <label htmlFor="email" className="block text-lg font-medium mb-2">
                 E-Mail
@@ -48,6 +65,8 @@ const LoginPage = () => {
                 type="email"
                 id="email"
                 placeholder="Type your email"
+                value={mail}
+                onChange={(e)=>setMail(e.target.value)}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
             </div>
@@ -60,6 +79,9 @@ const LoginPage = () => {
                 type={passwordVisible ? "text" : "password"}
                 id="password"
                 placeholder="Type your password"
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
               <button
@@ -98,14 +120,17 @@ const LoginPage = () => {
           </form>
         </div>
   
-  
         
         
-        </div>
+        
+        -
+      
+        <div className='mt-auto'></div>
+        <Footer></Footer>
+  </div>
   
-  
-    
-      <Footer></Footer>
+      
+        
       </>
       )
 }

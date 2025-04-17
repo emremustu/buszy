@@ -4,6 +4,9 @@ from django.http import JsonResponse
 from .models import User
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password
+from django.utils import timezone
 
 @csrf_exempt
 def register(request):
@@ -36,6 +39,8 @@ def register(request):
     return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})
 
 
+
+
 @csrf_exempt
 def login_view(request):
     if request.method == 'POST':
@@ -44,12 +49,19 @@ def login_view(request):
         email = data.get('email')
         password = data.get('password')
 
-        # E-posta ile doğrulama işlemi
-        user = authenticate(request, email=email, password=password)
+        email = email.strip().lower()
 
-        if user is not None:
-            login(request, user)
-            return JsonResponse({"success": True, "message": "Giriş başarılı!"})
+        if User.custom_check_user_password(email, password):
+            try:
+                user = User.objects.get(email=email)
+                # Giriş yaptıktan sonra last_login'ı güncelle
+                user.last_login = timezone.now()
+                user.save()  # Veritabanında güncelleme yapıyoruz
+                from django.contrib.auth import login as auth_login
+                auth_login(request, user)
+                return JsonResponse({"success": True, "message": "Giriş başarılı!"})
+            except User.DoesNotExist:
+                return JsonResponse({"success": False, "message": "Kullanıcı bulunamadı!"})
         else:
             return JsonResponse({"success": False, "message": "Geçersiz e-posta veya şifre!"})
 
