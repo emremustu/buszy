@@ -6,7 +6,6 @@ import Link from 'next/link'
 const adminPage = () => {
     return (
         <>
-
             <div className='flex flex-col h-screen'>
                 <Navbar></Navbar>
                 <div className='flex flex-col items-center justify-center h-full'>
@@ -15,9 +14,9 @@ const adminPage = () => {
                         {/* See Voyages Button */}
 
                         <div className='flex flex-col space-y-5 '>
-                            <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 w-124 ">
+                            <Link href='/seeVoyages' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 w-124 flex items-center justify-center ">
                                 See Voyages
-                            </button>
+                            </Link>
                             <div className='flex flex-row space-x-10 space-y-4 ' >
                                 {/* Add a Voyage Button */}
                                 <Link href='/' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
