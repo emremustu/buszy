@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from django.http import JsonResponse
-from .models import User
+from .models import User, Voyage
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
@@ -66,3 +66,32 @@ def login_view(request):
             return JsonResponse({"success": False, "message": "Geçersiz e-posta veya şifre!"})
 
     return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})
+
+
+@csrf_exempt
+def get_voyage(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        bus_id = data.get('bus_id')
+        bus_plate = data.get('bus_plate')
+
+        # Eğer ikisi de None ise hata döndür
+        if bus_id is None and bus_plate is None:
+            return JsonResponse({"success": False, "message": "bus_id ve bus_plate değerlerinden en az birini girin!"})
+
+        # Eğer bus_id verilmişse, bus_id ile sorgu yap
+        elif bus_id is not None:
+            voyage = Voyage.select_voyage(bus_id)
+            if voyage:
+                return JsonResponse({"success": True, "voyage": voyage})
+            else:
+                return JsonResponse({"success": False, "message": "Bu bus_id ile ilgili bir sefer bulunamadı."})
+
+        # Eğer bus_plate verilmişse, bus_plate ile sorgu yap
+        elif bus_plate is not None:
+            voyage = Voyage.objects.filter(bus_plate=bus_plate).first()
+            if voyage:
+                return JsonResponse({"success": True, "voyage": voyage})
+            else:
+                return JsonResponse({"success": False, "message": "Bu bus_plate ile ilgili bir sefer bulunamadı."})
