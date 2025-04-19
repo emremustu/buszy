@@ -82,7 +82,8 @@ def get_voyage(request):
 
         # Eğer bus_id verilmişse, bus_id ile sorgu yap
         elif bus_id is not None:
-            voyage = Voyage.select_voyage(bus_id)
+            bus_id_int = int(bus_id)
+            voyage = Voyage.select_voyage(bus_id_int)
             if voyage:
                 return JsonResponse({"success": True, "voyage": voyage})
             else:
