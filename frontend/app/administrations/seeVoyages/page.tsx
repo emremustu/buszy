@@ -14,17 +14,14 @@ const CardComponent = () => {
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();// Formun sayfa yenilenmesini engelle
-
-        var data;
-        if (bus_id==null){data={bus_plate};}
-        else if(bus_plate==null){data={bus_id};}
-        else{alert("Plase fill the blanks");}
-        
-
-    
+        const bus_id_int=parseInt(bus_id);
+        const data={
+            bus_id_int,
+            bus_plate,
+        }
         // POST isteği gönderme
         try {
-          const response = await fetch('http://localhost:8000/api/get-voyages/', {
+          const response = await fetch('http://localhost:8000/api/get-voyage', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -57,21 +54,21 @@ const CardComponent = () => {
                             <div className='flex flex-row space-x-10'>
                                 <input
                                     type="text"
-                                    value={inputText}
-                                    onChange={handleInputChange}
+                                    value={bus_plate}
+                                    onChange={(e) => setBus_plate(e.target.value)}
                                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                     placeholder="Plate Number"
                                 />
                                 <h1> OR </h1>
                                 <input
-                                    type="text"
-                                    value={inputText}
-                                    onChange={handleInputChange}
+                                    type="number"
+                                    value={bus_id}
+                                    onChange={(e) => setBus_id(e.target.value)}
                                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                     placeholder="Bus ID"
                                 />
                             </div>
-                            <button onClick={handleSubmit} className="mt-4 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 focus:outline-none">
+                            <button type='submit' className="mt-4 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 focus:outline-none">
                                 Search
                             </button>
                         </form>

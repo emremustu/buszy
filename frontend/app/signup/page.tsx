@@ -50,7 +50,6 @@ const SignupPage = () => {
   return (
     <>
       <Navbar />
-
       <div className="flex flex-row w-full justify-center">
         <div className="flex flex-col items-center mb-20">
           <h1 className="text-3xl font-bold mb-5 text-primary mt-12">Signup</h1>
