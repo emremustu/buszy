@@ -82,18 +82,22 @@ def get_voyage(request):
 
         # Eğer bus_id verilmişse, bus_id ile sorgu yap
         elif bus_id is not None:
-            bus_id_int = int(bus_id)
-            voyage = Voyage.select_voyage(bus_id_int)
-            if voyage:
-                return JsonResponse({"success": True, "voyage": voyage})
-            else:
-                return JsonResponse({"success": False, "message": "Bu bus_id ile ilgili bir sefer bulunamadı."})
+            try:
+                bus_id_int = int(bus_id)  # Bus ID'yi int türüne dönüştür
+                voyage = Voyage.select_voyage(bus_id_int)
+                if voyage:
+                    return JsonResponse({"success": True, "voyage": voyage})
+                else:
+                    return JsonResponse({"success": False, "message": "Bu bus_id ile ilgili bir sefer bulunamadı."})
+            except ValueError:
+                return JsonResponse({"success": False, "message": "Geçersiz bus_id değeri."})
 
         # Eğer bus_plate verilmişse, bus_plate ile sorgu yap
         elif bus_plate is not None:
-            voyage = Voyage.objects.filter(bus_plate=bus_plate).first()
+            voyage = Voyage.select_voyagebyplate(bus_plate)
             if voyage:
                 return JsonResponse({"success": True, "voyage": voyage})
             else:
                 return JsonResponse({"success": False, "message": "Bu bus_plate ile ilgili bir sefer bulunamadı."})
+
     return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})

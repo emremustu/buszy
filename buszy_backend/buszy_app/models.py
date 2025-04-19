@@ -94,7 +94,20 @@ class Voyage(models.Model):
             return None        
 
 
+    @staticmethod
+    def select_voyagebyplate(bus_plate):
+        query= """
+            SELECT * FROM voyage WHERE bus_plate = %s
+        """        
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[bus_plate])
+            voyage_data = cursor.fetchone()
 
+        if voyage_data:
+            return voyage_data
+        else:
+            return None 
 
     def __str__(self):
         return f"{self.bus_company} ({self.bus_plate})"
