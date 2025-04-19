@@ -69,6 +69,15 @@ class Voyage(models.Model):
         with connection.cursor() as cursor:
             cursor.execute(query,[bus_company,bus_plate,crew,cities])
 
+
+        queryForListing="""
+            INSERT INTO voyage_listing (bus_company, bus_time)
+        """    
+        
+            
+
+           
+
     @staticmethod
     def select_voyage(bus_id):
         query= """
@@ -96,6 +105,7 @@ class Voyage(models.Model):
 
 
 class VoyageListing(models.Model):
+    list_id = models.AutoField(primary_key=True)
     bus_company = models.CharField(max_length=50)
     bus_time = models.TimeField()
     bus_list_begin = models.CharField(max_length=20)

@@ -95,3 +95,4 @@ def get_voyage(request):
                 return JsonResponse({"success": True, "voyage": voyage})
             else:
                 return JsonResponse({"success": False, "message": "Bu bus_plate ile ilgili bir sefer bulunamadı."})
+    return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})
