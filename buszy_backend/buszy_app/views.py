@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from django.http import JsonResponse
-from .models import User, Voyage
+from .models import User, Voyage, VoyageListing
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
@@ -101,3 +101,42 @@ def get_voyage(request):
                 return JsonResponse({"success": False, "message": "Bu bus_plate ile ilgili bir sefer bulunamadı."})
 
     return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})
+
+
+
+@csrf_exempt
+def add_voyage(request):
+    if request.method == 'POST':
+        data=json.loads(request.body)
+
+        bus_company = data.get('bus_company')
+        bus_plate = data.get('bus_plate')
+        seats_emp=data.get('seats_emp')
+        seats_full=data.get('seats_full')
+        crew = data.get('crew')
+        cities = data.get('cities')
+
+        seats_emp_json = json.dumps(seats_emp)
+        seats_full_json=json.dumps(seats_full)
+        cities_json=json.dumps(cities)
+
+
+
+        if not bus_company or not bus_plate or not crew or not cities:
+            return JsonResponse({"success": False, "message": "There are missing fields!"})
+        elif len(cities)==1:
+            return JsonResponse({"success":False,"message":"There must be more than one cities in a voyage!"})
+        try:
+            Voyage.create_voyage(bus_company,bus_plate,seats_emp_json,seats_full_json, crew,cities_json)
+            for city in cities_json:
+                city_dict = json.loads(city) 
+                print(city_dict['city'])
+
+
+            return JsonResponse({"success":True, "message":"Successfully added!"})
+        except ValueError:
+            return JsonResponse({"success":False, "message":"There are invalid tyoes of inputs!"})
+
+
+
+        

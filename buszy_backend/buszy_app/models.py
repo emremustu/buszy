@@ -1,4 +1,5 @@
-from django.db import models
+import json
+from django.db import connection, models
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 
@@ -52,7 +53,7 @@ class User(models.Model):
 class Voyage(models.Model):
     bus_id = models.AutoField(primary_key=True)
     bus_company = models.CharField(max_length=50)
-    bus_plate = models.CharField(max_length=10)
+    bus_plate = models.CharField(max_length=10, unique=True)
     seats_emp = models.JSONField()
     seats_full = models.JSONField()
     crew = models.CharField(max_length=100)
@@ -60,28 +61,25 @@ class Voyage(models.Model):
 
 
     @staticmethod
-    def create_voyage(bus_company,bus_plate,crew,cities):
-        query="""
-                INSERT INTO voyage (bus_company, bus_plate, seats_emp,seats_full,crew,cities)
-                VALUES (%s,%s,%s,%s,%s,%s)
+    def create_voyage(bus_company, bus_plate, seats_emp, seats_full, crew, cities):
+        # JSON verileri string'e dönüştürüyoruz
+        seats_emp_json = json.dumps(seats_emp)
+        seats_full_json = json.dumps(seats_full)
+        cities_json = json.dumps(cities)
+
+        query = """
+            INSERT INTO voyage (bus_company, bus_plate, seats_emp, seats_full, crew, cities)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
-        from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query,[bus_company,bus_plate,crew,cities])
-
-
-        queryForListing="""
-            INSERT INTO voyage_listing (bus_company, bus_time)
-        """    
-        
-            
+            cursor.execute(query, [bus_company, bus_plate, seats_emp_json, seats_full_json, crew, cities_json])
 
            
 
     @staticmethod
     def select_voyage(bus_id):
         query= """
-            SELECT * FROM voyage WHERE bus_id = %d
+            SELECT * FROM voyage WHERE bus_id = %s
         """        
         from django.db import connection
         with connection.cursor() as cursor:
@@ -129,8 +127,28 @@ class VoyageListing(models.Model):
     def __str__(self):
         return f"{self.bus_company} - {self.bus_time}"
 
+    @staticmethod
+    def addVoyageListing(bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_id):
+        query= """
+            INSERT INTO voyage_listing (bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price,bus_id) VALUES (%s,%s,%s,%s,%s,%s)
+        """        
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_id])
+            voyage_data = cursor.fetchone()
+
+        if voyage_data:
+            return voyage_data
+        else:
+            return None 
+
+
     class Meta:
         db_table = 'voyage_listing'  # Veritabanındaki tablo adı
+
+
+
+
 
 
 
