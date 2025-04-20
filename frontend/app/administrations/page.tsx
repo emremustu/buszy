@@ -14,12 +14,12 @@ const adminPage = () => {
                         {/* See Voyages Button */}
 
                         <div className='flex flex-col space-y-5 '>
-                            <Link href='/seeVoyages' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 w-124 flex items-center justify-center ">
+                            <Link href='/administrations/seeVoyages' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 w-124 flex items-center justify-center ">
                                 See Voyages
                             </Link>
                             <div className='flex flex-row space-x-10 space-y-4 ' >
                                 {/* Add a Voyage Button */}
-                                <Link href='/' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
+                                <Link href='/administrations/addVoyages' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
                                     Add a Voyage
                                 </Link>
 
