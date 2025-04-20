@@ -1,0 +1,221 @@
+/* Reset ve genel ayarlar */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #00b140;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 30px;
+  border-bottom: 2px solid #009f36; /* navbar altına ince çizgi */
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.flag {
+  height: 24px;
+}
+
+.signup-btn {
+  background-color: white;
+  color: #00b140;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.signup-btn:hover {
+  background-color: #f1f1f1;
+  transform: scale(1.05);
+}
+
+/* Sayfa içeriği */
+.container {
+  padding: 40px 30px;
+}
+
+.trip-title {
+  font-size: 22px;
+  margin-bottom: 25px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Filtre alanı */
+.filters-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 10px 30px;
+  background-color: #ffffff;  /* Give a clean white background */
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Slight shadow for a modern touch */
+}
+
+.filter-button {
+  background-color: #00b140;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px; /* Smaller font size */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.filter-button:hover {
+  background-color: #009f36;
+  transform: scale(1.05);
+}
+
+.tags {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background-color: #e6e6e6;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px; /* Slightly smaller text size */
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.tag:hover {
+  background-color: #00b140;
+  color: white;
+}
+
+
+
+/* Bus Card */
+.bus-card {
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bus-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.bus-logo {
+  height: 50px;
+}
+
+.bus-info {
+  flex: 1;
+  margin-left: 30px;
+}
+
+.time-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.time-block h2 {
+  font-size: 24px;
+  color: #333;
+}
+
+.time-block p {
+  color: #888;
+  font-size: 14px;
+}
+
+/* Bus Info - Seat Info */
+.seat-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Increase the space between the icon and text */
+  margin-bottom: 0.001px; /* Space between seat info and route */
+}
+
+.seat-info img {
+  height: 50px; /* Adjust the size of the seat icon */
+}
+
+/* Bus Info - Route (destination) */
+.route {
+  font-size: 22px; /* Larger size for the route */
+  font-weight: 600; /* Semi-bold weight for modern feel */
+  color: #060a07; /* Green to match the theme */
+  text-align: center; /* Center the destination text */
+  margin-top: 10px; /* Space from other elements */
+  letter-spacing: 2px; /* Increase letter spacing for clarity */
+  text-transform: capitalize; /* Ensure proper capitalization */
+}
+
+.route:hover {
+  color: #009f36; /* Slight color change on hover for interaction */
+}
+
+
+.price-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.seat-btn {
+  background-color: #00b140;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.seat-btn:hover {
+  background-color: #009f36;
+  transform: scale(1.05);
+}
+
+.price {
+  font-size: 28px;
+  font-weight: bold;
+  color: #00b140;
+}
