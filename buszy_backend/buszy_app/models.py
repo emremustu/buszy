@@ -51,9 +51,9 @@ class User(models.Model):
 
 
 class Voyage(models.Model):
-    bus_id = models.AutoField(primary_key=True)
+
     bus_company = models.CharField(max_length=50)
-    bus_plate = models.CharField(max_length=10, unique=True)
+    bus_plate = models.CharField(max_length=10, unique=True,primary_key=True)
     seats_emp = models.JSONField()
     seats_full = models.JSONField()
     crew = models.CharField(max_length=100)
@@ -62,7 +62,7 @@ class Voyage(models.Model):
 
     @staticmethod
     def create_voyage(bus_company, bus_plate, seats_emp, seats_full, crew, cities):
-        # JSON verileri string'e dönüştürüyoruz
+        # Python dict'leri JSON string'e çevriliyor
         seats_emp_json = json.dumps(seats_emp)
         seats_full_json = json.dumps(seats_full)
         cities_json = json.dumps(cities)
@@ -72,24 +72,15 @@ class Voyage(models.Model):
             VALUES (%s, %s, %s, %s, %s, %s)
         """
         with connection.cursor() as cursor:
-            cursor.execute(query, [bus_company, bus_plate, seats_emp_json, seats_full_json, crew, cities_json])
-
+            cursor.execute(query, [
+                bus_company,
+                bus_plate,
+                seats_emp_json,
+                seats_full_json,
+                crew,
+                cities_json
+            ])
            
-
-    @staticmethod
-    def select_voyage(bus_id):
-        query= """
-            SELECT * FROM voyage WHERE bus_id = %s
-        """        
-        from django.db import connection
-        with connection.cursor() as cursor:
-            cursor.execute(query,[bus_id])
-            voyage_data = cursor.fetchone()
-
-        if voyage_data:
-            return voyage_data
-        else:
-            return None        
 
 
     @staticmethod
@@ -107,12 +98,7 @@ class Voyage(models.Model):
         else:
             return None 
 
-    def __str__(self):
-        return f"{self.bus_company} ({self.bus_plate})"
-
-    class Meta:
-        db_table = 'voyage'  # Veritabanındaki tablo adı  
-
+    
 
 
 class VoyageListing(models.Model):
@@ -121,20 +107,20 @@ class VoyageListing(models.Model):
     bus_time = models.TimeField()
     bus_list_begin = models.CharField(max_length=20)
     bus_list_end = models.CharField(max_length=20)
-    bus_list_price = models.DecimalField(max_digits=4, decimal_places=2)
-    bus_id = models.ForeignKey(Voyage, on_delete=models.CASCADE, related_name='voyage')  # FOREIGN KEY ile ilişki
+    bus_list_price = models.DecimalField(max_digits=6, decimal_places=2)
+    bus_plate = models.ForeignKey(Voyage, on_delete=models.CASCADE, related_name='voyage')  # FOREIGN KEY ile ilişki
 
     def __str__(self):
         return f"{self.bus_company} - {self.bus_time}"
 
     @staticmethod
-    def addVoyageListing(bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_id):
+    def addVoyageListing(bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_plate):
         query= """
-            INSERT INTO voyage_listing (bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price,bus_id) VALUES (%s,%s,%s,%s,%s,%s)
+            INSERT INTO voyage_listing (bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price,bus_plate) VALUES (%s,%s,%s,%s,%s,%s)
         """        
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query,[bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_id])
+            cursor.execute(query,[bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_plate])
             voyage_data = cursor.fetchone()
 
         if voyage_data:

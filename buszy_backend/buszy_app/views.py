@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from django.http import JsonResponse
@@ -7,6 +8,31 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 from django.utils import timezone
+import requests
+
+
+def get_distance_km(origin, destination, api_key):
+    url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={destination}&key={api_key}&language=tr"
+    response = requests.get(url)
+    data = response.json()
+
+    # API genel durumu
+    if data.get("status") != "OK":
+        raise Exception(f"Google API error: {data.get('status')}")
+
+    try:
+        element = data["rows"][0]["elements"][0]
+        element_status = element["status"]
+
+        if element_status != "OK":
+            raise Exception(f"Distance API element error: {element_status}")
+
+        meters = element["distance"]["value"]
+        km = Decimal(meters) / Decimal('1000')
+        return km.quantize(Decimal('0.01'))
+
+    except Exception as e:
+        raise Exception(f"Failed to get distance: {str(e)}")
 
 @csrf_exempt
 def register(request):
@@ -107,35 +133,52 @@ def get_voyage(request):
 @csrf_exempt
 def add_voyage(request):
     if request.method == 'POST':
-        data=json.loads(request.body)
+        data = json.loads(request.body)
 
         bus_company = data.get('bus_company')
         bus_plate = data.get('bus_plate')
-        seats_emp=data.get('seats_emp')
-        seats_full=data.get('seats_full')
+        seats_emp = data.get('seats_emp')
+        seats_full = data.get('seats_full')
         crew = data.get('crew')
         cities = data.get('cities')
 
-        seats_emp_json = json.dumps(seats_emp)
-        seats_full_json=json.dumps(seats_full)
-        cities_json=json.dumps(cities)
-
-
-
         if not bus_company or not bus_plate or not crew or not cities:
             return JsonResponse({"success": False, "message": "There are missing fields!"})
-        elif len(cities)==1:
-            return JsonResponse({"success":False,"message":"There must be more than one cities in a voyage!"})
+        elif len(cities) == 1:
+            return JsonResponse({"success": False, "message": "There must be more than one cities in a voyage!"})
+
         try:
-            Voyage.create_voyage(bus_company,bus_plate,seats_emp_json,seats_full_json, crew,cities_json)
-            for city in cities_json:
-                city_dict = json.loads(city) 
-                print(city_dict['city'])
+            # Burada json.dumps kullanmıyoruz çünkü modelin içindeki fonksiyon zaten JSON'a çeviriyor
+            Voyage.create_voyage(bus_company, bus_plate, seats_emp, seats_full, crew, cities)
+            # Eğer şehirleri yazdırmak istiyorsan cities üzerinde dön
+            
+            for i in range(len(cities)):
+                city_i = cities[i]
+                
+                for j in range(i+1,len(cities)):
+                    
+                    city_j = cities[j]
+                    try:
 
 
-            return JsonResponse({"success":True, "message":"Successfully added!"})
-        except ValueError:
-            return JsonResponse({"success":False, "message":"There are invalid tyoes of inputs!"})
+                            
+                        distance_km= get_distance_km(city_i['city'],city_j['city'],"AIzaSyBqgUsbGweMs6ucid-Y1BnHVM-fbxWcXEU")
+                        print(distance_km)
+                        if distance_km is None:
+                            return JsonResponse({"success": False, "message": f"Could not get distance from {city_i['city']} to {city_j['city']}"})
+
+                        price_per_km = Decimal('1.4') 
+                        price = (distance_km * price_per_km).quantize(Decimal('0.01'))
+
+                        VoyageListing.addVoyageListing(bus_company,city_i['time'],city_i['city'],city_j['city'],price,bus_plate)
+                    except Exception as e:
+                        return JsonResponse({"success":False,"message": f"Error: {str(e)}"})
+                    
+
+            return JsonResponse({"success": True, "message": "Successfully added!"})
+
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
 
 
 

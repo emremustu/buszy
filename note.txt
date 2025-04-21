@@ -1,0 +1,3 @@
+arkadaşlar son commitimden sonra back end kısmını çalıştırmadan önce 
+
+virtual enviroment aktif ettikten sonra "pip install requests" komutunu çalıştırmadan başlatmayın.
