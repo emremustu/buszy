@@ -130,6 +130,21 @@ class VoyageListing(models.Model):
             return None 
 
 
+    @staticmethod
+    def getVoyageList(date,origin,destination):
+        query="""
+        SELECT * FROM voyage_listing WHERE voyage_date=%s AND bus_list_begin=%s AND bus_list_end=%s;
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[date,origin,destination])
+            voyage_data = cursor.fetchall()
+
+        if voyage_data:
+            return voyage_data
+        else:
+            return None 
+
     class Meta:
         db_table = 'voyage_listing'  # Veritabanındaki tablo adı
 

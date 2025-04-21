@@ -129,6 +129,26 @@ def get_voyage(request):
     return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})
 
 
+@csrf_exempt
+def get_voyages(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        date = data.get('date')
+        origin = data.get('origin')
+        destination = data.get('destination')
+
+        try:
+            data=VoyageListing.getVoyageList(date,origin,destination)
+
+            return JsonResponse({"success":True,"voyages":data})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
+
+
+
+        
+
 
 @csrf_exempt
 def add_voyage(request):
