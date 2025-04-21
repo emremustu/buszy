@@ -108,19 +108,20 @@ class VoyageListing(models.Model):
     bus_list_begin = models.CharField(max_length=20)
     bus_list_end = models.CharField(max_length=20)
     bus_list_price = models.DecimalField(max_digits=6, decimal_places=2)
+    voyage_date = models.DateField()
     bus_plate = models.ForeignKey(Voyage, on_delete=models.CASCADE, related_name='voyage')  # FOREIGN KEY ile ilişki
 
     def __str__(self):
         return f"{self.bus_company} - {self.bus_time}"
 
     @staticmethod
-    def addVoyageListing(bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_plate):
+    def addVoyageListing(bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,voyage_date,bus_plate):
         query= """
-            INSERT INTO voyage_listing (bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price,bus_plate) VALUES (%s,%s,%s,%s,%s,%s)
+            INSERT INTO voyage_listing (bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price,voyage_date,bus_plate) VALUES (%s,%s,%s,%s,%s,%s,%s)
         """        
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query,[bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,bus_plate])
+            cursor.execute(query,[bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,voyage_date,bus_plate])
             voyage_data = cursor.fetchone()
 
         if voyage_data:

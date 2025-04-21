@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 from django.utils import timezone
 import requests
-
+from django.db import transaction
 
 def get_distance_km(origin, destination, api_key):
     url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={destination}&key={api_key}&language=tr"
@@ -148,17 +148,18 @@ def add_voyage(request):
             return JsonResponse({"success": False, "message": "There must be more than one cities in a voyage!"})
 
         try:
-            # Burada json.dumps kullanmıyoruz çünkü modelin içindeki fonksiyon zaten JSON'a çeviriyor
-            Voyage.create_voyage(bus_company, bus_plate, seats_emp, seats_full, crew, cities)
-            # Eğer şehirleri yazdırmak istiyorsan cities üzerinde dön
+            with transaction.atomic():
+                # Burada json.dumps kullanmıyoruz çünkü modelin içindeki fonksiyon zaten JSON'a çeviriyor
+                Voyage.create_voyage(bus_company, bus_plate, seats_emp, seats_full, crew, cities)
+                # Eğer şehirleri yazdırmak istiyorsan cities üzerinde dön
             
-            for i in range(len(cities)):
-                city_i = cities[i]
+                for i in range(len(cities)):
+                    city_i = cities[i]
                 
-                for j in range(i+1,len(cities)):
+                    for j in range(i+1,len(cities)):
                     
-                    city_j = cities[j]
-                    try:
+                        city_j = cities[j]
+                    
 
 
                             
@@ -166,20 +167,23 @@ def add_voyage(request):
                         print(distance_km)
                         if distance_km is None:
                             return JsonResponse({"success": False, "message": f"Could not get distance from {city_i['city']} to {city_j['city']}"})
-
                         price_per_km = Decimal('1.4') 
                         price = (distance_km * price_per_km).quantize(Decimal('0.01'))
 
-                        VoyageListing.addVoyageListing(bus_company,city_i['time'],city_i['city'],city_j['city'],price,bus_plate)
-                    except Exception as e:
-                        return JsonResponse({"success":False,"message": f"Error: {str(e)}"})
+                        VoyageListing.addVoyageListing(bus_company,city_i['time'],city_i['city'],city_j['city'],price,city_i['date'], bus_plate)
+                    
                     
 
-            return JsonResponse({"success": True, "message": "Successfully added!"})
+                return JsonResponse({"success": True, "message": "Successfully added!"})
 
         except Exception as e:
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
 
 
 
-        
+@csrf_exempt
+def getVoyageList(request):
+    if request.method == 'POST':
+        data=json.loads(request.body)
+
+                
