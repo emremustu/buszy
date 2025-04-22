@@ -51,7 +51,6 @@ class User(models.Model):
 
 
 class Voyage(models.Model):
-
     bus_company = models.CharField(max_length=50)
     bus_plate = models.CharField(max_length=10, unique=True,primary_key=True)
     seats_emp = models.JSONField()
