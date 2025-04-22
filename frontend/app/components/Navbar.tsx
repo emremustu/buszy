@@ -8,7 +8,7 @@ const Navbar = () => {
                 <img src='/assets/images/buszy_logo.png' alt="Marpus'a Hoşgeldiniz!" className='h-24 ml-8' />
             </Link>
 
-            <Link href='/' className='ml-auto '>
+            <Link href='/login' className='ml-auto '>
                 <button className='rounded-full font-sans font-semibold text-white text-2xl py-2 px-4 mr-4 hover:text-primarybr cursor-pointer transition duration-300' >Login</button>
 
             </Link>

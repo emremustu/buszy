@@ -55,7 +55,7 @@ const LoginPage = () => {
         
         <div className="flex flex-col items-center h-full justify-center">
           
-          <h1 className="text-3xl font-bold mb-5 text-primary mt-12">Signup</h1>
+          <h1 className="text-3xl font-bold mb-5 text-primary mt-12">Login</h1>
           <form onSubmit={handleSubmit} className="w-[48rem] bg-white shadow-2xl rounded-3xl p-8 grid grid-cols-2 gap-6">
             <div className="mb-6 col-span-2">
               <label htmlFor="email" className="block text-lg font-medium mb-2">
