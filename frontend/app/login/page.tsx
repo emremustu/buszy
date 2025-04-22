@@ -114,7 +114,7 @@ const LoginPage = () => {
                 className="w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primarybr cursor-pointer transition duration-300"
   
               >
-                Signup
+                Login
               </button>
             </div>
           </form>

@@ -44,9 +44,9 @@ const TripsPage = () => {
       {/* Navbar */}
       <Navbar />
 
-      <div className="mx-48">
+      <div className="mx-48 flex flex-col h-screen">
         {/* Main Content */}
-        <h1 className="trip-title text-2xl font-bold text-gray-800 mb-6">
+        <h1 className="trip-title text-2xl font-bold text-gray-800 mb-6 mt-6">
           Trips for <strong>{origin} - {destination}</strong>
         </h1>
 
@@ -120,7 +120,7 @@ const TripsPage = () => {
           <p>No voyages available for the selected criteria.</p>
         )}
       </div>
-
+        <div className="mt-auto"></div>
       <Footer />
     </>
   );
