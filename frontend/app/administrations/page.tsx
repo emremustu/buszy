@@ -24,9 +24,9 @@ const adminPage = () => {
                                 </Link>
 
                                 {/* Change Voyage Information Button */}
-                                <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 space-x-15">
+                                <Link href='/administrations/changeVoyageInformation' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 space-x-15">
                                     Change Voyage Information
-                                </button>
+                                </Link>
                                 <button className='bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57'>
                                     Customer Comments
                                 </button>
