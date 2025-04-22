@@ -78,7 +78,7 @@ const CardComponent = () => {
                                 <div className="mt-4">
                                     <p><strong>Bus ID:</strong> {voyageData[0]}</p>
                                     <p><strong>Bus Plate:</strong> {voyageData[2]}</p>
-                                    <p><strong>Departure Time:</strong> {voyageData.departure_time}</p>
+                                    <p><strong>Crew:</strong> {voyageData[5]}</p>
                                     {/* Diğer voyage bilgilerini burada gösterebilirsiniz */}
                                 </div>
                             )}

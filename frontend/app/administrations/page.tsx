@@ -24,24 +24,24 @@ const adminPage = () => {
                                 </Link>
 
                                 {/* Change Voyage Information Button */}
-                                <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 space-x-15">
+                                <Link href='/administrations/changeVoyageInformation' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 space-x-15">
                                     Change Voyage Information
-                                </button>
+                                </Link>
                                 <button className='bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57'>
                                     Customer Comments
                                 </button>
                             </div>
                             <div className='flex flex-row space-x-10'>
                                 {/* Report a Delay Button */}
-                                <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57">
+                                <Link href='/administrations/reportDelay' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
                                     Report a Delay
-                                </button>
+                                </Link>
 
                                 {/* Manage Tickets Button */}
-                                <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57">
+                                <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
                                     Manage Tickets
                                 </button>
-                                <button className='bg-primarybr text-white  hover:bg-green-600 py-2 px-4 rounded-3xl h-14 w-57 border-4 border-red-600'>
+                                <button className='bg-primarybr text-white  hover:bg-green-600 py-2 px-4 rounded-3xl h-14 w-57 border-4 border-red-600 flex items-center justify-center'>
                                     Help Desk
                                 </button>
                             </div>
