@@ -1,125 +1,137 @@
-'use client';
-import React, { useState } from 'react';
-import Footer from '@/app/components/Footer';
-import Navbar from '@/app/components/Navbar';
+"use client";
 
-const cities: string[] = [
-    "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray",
-    "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin",
-    "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt",
-    "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur",
-    "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli",
-    "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum",
-    "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari",
-    "Hatay", "Iğdır", "Isparta", "İstanbul", "İzmir",
-    "Kahramanmaraş", "Karabük", "Karaman", "Kars", "Kastamonu",
-    "Kayseri", "Kırıkkale", "Kırklareli", "Kırşehir", "Kocaeli",
-    "Konya", "Kütahya", "Malatya", "Manisa", "Mardin",
-    "Mersin", "Muğla", "Muş", "Nevşehir", "Niğde",
-    "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun",
-    "Siirt", "Sinop", "Sivas", "Şanlıurfa", "Şırnak",
-    "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Uşak",
-    "Van", "Yalova", "Yozgat", "Zonguldak"
-];
+import Footer from "@/app/components/Footer";
+import Navbar from "@/app/components/Navbar";
+import { useState } from "react";
 
-const AddVoyagePage = () => {
-    const [fromCity, setFromCity] = useState<string>("");
-    const [toCity, setToCity] = useState<string>("");
-    const [departureDate, setDepartureDate] = useState<string>("");
-    const [crew, setCrew] = useState<string>("");  // Default 1 person
+type CityStop = {
+    city: string;
+    time: string;
+    date: string;
+};
 
-    const handleSubmit = (e: React.FormEvent) => {
+const defaultStop: CityStop = {
+    city: "Bursa",
+    time: "15:30",
+    date: "2025-04-21",
+};
+
+const VoyageForm = () => {
+    const [stops, setStops] = useState<CityStop[]>([defaultStop]);
+    const [plate, setPlate] = useState("");
+    const [crew, setCrew] = useState("");
+
+    const handleInputChange = (index: number, field: keyof CityStop, value: string) => {
+        const updated = [...stops];
+        updated[index][field] = value;
+        setStops(updated);
+    };
+
+    const handleAddStop = () => {
+        setStops([...stops, defaultStop]);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        try {
+            const response = await fetch("http://localhost:8000/api/create-voyage", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ cities: stops }),
+            });
 
-        const voyageData = {
-            fromCity,
-            toCity,
-            departureDate,
-            crew,
-        };
-
-        console.log("Voyage Data:", voyageData);
-        // Burada API'ye veri gönderebilirsiniz
+            const data = await response.json();
+            console.log("Voyage created:", data);
+        } catch (error) {
+            console.error("Error submitting voyage:", error);
+        }
     };
 
     return (
         <>
-            <div className='flex flex-col h-screen'>
-                <Navbar />
-                <div className='mt-9 max-w-sm mx-auto bg-white shadow-md rounded-lg p-6'>
-                    <h1 className='text-xl font-semibold text-center'>Create New Voyage</h1>
-                    <form onSubmit={handleSubmit} className='space-y-4'>
+            <div className="flex flex-col h-screen">
+                <Navbar></Navbar>
+                <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg space-y-6">
+                    <h2 className="text-2xl font-bold text-center">Create New Voyage</h2>
+                    <div className="flex flex-col space-y-3 ">
+                        <div className="flex flex-row space-x-10">
                         <div>
-                            <label htmlFor="fromCity" className="block text-sm font-medium text-gray-700">From City</label>
-                            <select
-                                id="fromCity"
-                                name="fromCity"
-                                value={fromCity}
-                                onChange={(e) => setFromCity(e.target.value)}
-                                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
-                                required
-                            >
-                                <option value="">Select a city</option>
-                                {cities.map((city, index) => (
-                                    <option key={index} value={city}>{city}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="toCity" className="block text-sm font-medium text-gray-700">To City</label>
-                            <select
-                                id="toCity"
-                                name="toCity"
-                                value={toCity}
-                                onChange={(e) => setToCity(e.target.value)}
-                                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
-                                required
-                            >
-                                <option value="">Select a city</option>
-                                {cities.map((city, index) => (
-                                    <option key={index} value={city}>{city}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="departureDate" className="block text-sm font-medium text-gray-700">Departure Date</label>
-                            <input
-                                type="date"
-                                id="departureDate"
-                                name="departureDate"
-                                value={departureDate}
-                                onChange={(e) => setDepartureDate(e.target.value)}
-                                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="crew" className="block text-sm font-medium text-gray-700">Crew Members</label>
+                            <label className="block text-sm font-medium mb-1">Plate</label>
                             <input
                                 type="text"
-                                id="crew"
-                                name="crew"
-                                value={crew}
-                                onChange={(e) => setCrew(e.target.value)}
-                                className="w-full mt-2 p-2 border border-gray-300 rounded-md"
-                                required
+                                value={plate}
+                                onChange={(e) => setPlate(e.target.value)}
+                                className="w-full border px-3 py-2 rounded"
                             />
                         </div>
-                        <div className="text-center">
-                            <button
-                                type="submit"
-                                className="mt-4 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 focus:outline-none"
-                            >
-                                Create Voyage
-                            </button>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Crew</label>
+                            <input
+                                type="text"
+                                value={crew}
+                                onChange={(e) => setCrew(e.target.value)}
+                                className="w-full border px-3 py-2 rounded"
+                            />
                         </div>
-                    </form>
-                </div>
-                <div className='mt-auto'></div>
-                <Footer />
+                        </div>
+                        {stops.map((stop, index) => (
+                            <div key={index} className="flex flex-row border space-x-2 p-4 rounded-lg space-y-4 bg-gray-50">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">City</label>
+                                    <input
+                                        type="text"
+                                        value={stop.city}
+                                        onChange={(e) => handleInputChange(index, "city", e.target.value)}
+                                        className="w-full border px-3 py-2 rounded"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Time</label>
+                                    <input
+                                        type="time"
+                                        value={stop.time}
+                                        onChange={(e) => handleInputChange(index, "time", e.target.value)}
+                                        className="w-full border px-3 py-2 rounded"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Date</label>
+                                    <input
+                                        type="date"
+                                        value={stop.date}
+                                        onChange={(e) => handleInputChange(index, "date", e.target.value)}
+                                        className="w-full border px-3 py-2 rounded"
+                                    />
+                                </div>
+                            </div>
+
+                        ))}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <button
+                            type="button"
+                            onClick={handleAddStop}
+                            className=" font-bold text-black hover:text-primarybr transition-transform"
+                        >
+                            +  Add Stop
+                        </button>
+                        <button
+                            type="submit"
+                            className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition-colors"
+                        >
+                            Create Voyage
+                        </button>
+                    </div>
+                </form>
+                <div className="mt-auto"></div>
+                <Footer></Footer>
             </div>
         </>
+
     );
 };
 
-export default AddVoyagePage;
+export default VoyageForm;
