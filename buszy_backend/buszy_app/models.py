@@ -10,6 +10,8 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     last_login = models.DateTimeField(null=True, blank=True)  # last_login alanını ekleyin
+    account_type = models.CharField(max_length=20)
+
 
     def __str__(self):
         return f"{self.name} {self.last_name} ({self.email})"
@@ -21,15 +23,15 @@ class User(models.Model):
         return check_password(raw_password, self.password)
 
     @staticmethod
-    def custom_create_user(name, last_name, email, raw_password):
+    def custom_create_user(name, last_name, email, raw_password,account_type):
         hashed_password = make_password(raw_password)
         query = """
-            INSERT INTO buszy_app_user (name, last_name, email, password)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO buszy_app_user (name, last_name, email, password, account_type)
+            VALUES (%s, %s, %s, %s, %s)
         """
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query, [name, last_name, email, hashed_password])
+            cursor.execute(query, [name, last_name, email, hashed_password,account_type])
 
     @staticmethod
     def custom_check_user_password(email, raw_password):
@@ -148,8 +150,22 @@ class VoyageListing(models.Model):
         db_table = 'voyage_listing'  # Veritabanındaki tablo adı
 
 
+    @staticmethod
+    def getVoyageListByPlate(plate):
+        query="""
+        SELECT * FROM voyage_listing WHERE bus_plate=%s;
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[plate])
+            voyage_data = cursor.fetchall()
 
+        if voyage_data:
+            return voyage_data
+        else:
+            return None 
 
+    # def editVoyageListing(bus_time)
 
 
 

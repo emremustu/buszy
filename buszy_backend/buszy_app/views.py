@@ -44,12 +44,19 @@ def register(request):
             last_name = data.get('last_name')
             email = data.get('email')
             password = data.get('password')
+            account_type = data.get('account_type')
 
-            if not name or not last_name or not email or not password:
-                return JsonResponse({"success": False, "message": "Eksik alan var!"})
+            if account_type is "individuals":
+                if not name or not last_name or not email or not password:
+                    return JsonResponse({"success": False, "message": "Eksik alan var!"})
+            else:
+                if not name or not email or not password:
+                    last_name=""
+                    return JsonResponse({"success": False, "message": "Eksik alan var!"})
+            
 
             # Yeni kullanıcı oluştur
-            user = User(name=name, last_name=last_name, email=email)
+            user = User(name=name, last_name=last_name, email=email,account_type=account_type)
             user.set_password(password)
             user.save()
 
@@ -74,6 +81,7 @@ def login_view(request):
 
         email = data.get('email')
         password = data.get('password')
+        
 
         email = email.strip().lower()
 
@@ -85,7 +93,7 @@ def login_view(request):
                 user.save()  # Veritabanında güncelleme yapıyoruz
                 from django.contrib.auth import login as auth_login
                 auth_login(request, user)
-                return JsonResponse({"success": True, "message": "Giriş başarılı!"})
+                return JsonResponse({"success": True, "message": "Giriş başarılı!","user_id": user.id})
             except User.DoesNotExist:
                 return JsonResponse({"success": False, "message": "Kullanıcı bulunamadı!"})
         else:
@@ -130,7 +138,7 @@ def get_voyage(request):
 
 
 @csrf_exempt
-def get_voyages(request):
+def get_voyage_listing(request):
     if request.method == 'POST':
         data = json.loads(request.body)
 
@@ -146,8 +154,15 @@ def get_voyages(request):
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
 
 
+@csrf_exempt
+def get_voyage_listing_byPlate(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        plate=data.get('plate')
 
         
+                
 
 
 @csrf_exempt
