@@ -1,9 +1,9 @@
 "use client";
-import Navbar from '../components/Navbar'
+import Navbar from '../components/Navbar';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 import { useState } from 'react';
 import Footer from '../components/Footer';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const SignupPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -13,18 +13,23 @@ const SignupPage = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<'companies' | 'individuals'>('individuals');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Formun sayfa yenilenmesini engelle
-    
+    e.preventDefault(); // Prevent form submission from reloading the page
+
     const data = {
-      name,
-      last_name: lastName,
+      name: selectedOption === 'companies' ? companyName : name,
+      last_name: selectedOption === 'individuals' ? lastName : '',
       email,
       password,
+      account_type:selectedOption,
     };
 
-    // POST isteği gönderme
+    // POST request to send the data
     try {
       const response = await fetch('http://localhost:8000/api/register/', {
         method: 'POST',
@@ -37,13 +42,25 @@ const SignupPage = () => {
       const result = await response.json();
 
       if (result.success) {
-        alert("Kayıt başarılı!");
+        if (rememberMe) {
+          // Store the user's info (e.g., user_id or token) permanently in localStorage
+          
+          localStorage.setItem('rememberMe', 'true');
+          localStorage.setItem('userLoggedIn', 'true');
+          localStorage.setItem('userId', result.user_id); // Assuming result contains user_id
+        } else {
+          // Store the user's info for the session in sessionStorage
+          sessionStorage.setItem('rememberMe', 'false');
+          sessionStorage.setItem('userLoggedIn', 'true');
+          sessionStorage.setItem('userId', result.user_id); // Assuming result contains user_id
+        }
+        router.push('/');
       } else {
-        alert(result.message || "Bir hata oluştu!"); // Hata mesajını burada göster
+        alert(result.message || "An error occurred!"); // Show error message
       }
     } catch (error) {
       console.error("Error during fetch:", error);
-      alert("Bir hata oluştu, lütfen tekrar deneyin.");
+      alert("An error occurred, please try again.");
     }
   };
 
@@ -53,29 +70,62 @@ const SignupPage = () => {
       <div className="flex flex-row w-full justify-center">
         <div className="flex flex-col items-center mb-20">
           <h1 className="text-3xl font-bold mb-5 text-primary mt-12">Signup</h1>
+          <div className="flex my-6 w-full rounded-2xl">
+            <div
+              className={`w-1/2 py-2 text-center cursor-pointer rounded-2xl text-2xl transition-all duration-300 ${selectedOption === 'companies' ? 'bg-green-500 text-white' : 'text-green-500'}`}
+              onClick={() => setSelectedOption('companies')}
+            >
+              For companies
+            </div>
+            <div
+              className={`w-1/2 py-2 text-center cursor-pointer rounded-2xl text-2xl transition-all duration-300 ${selectedOption === 'individuals' ? 'bg-green-500 text-white' : 'text-green-500'}`}
+              onClick={() => setSelectedOption('individuals')}
+            >
+              For individuals
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="w-[48rem] bg-white shadow-2xl rounded-3xl p-8 grid grid-cols-2 gap-6">
-            <div className="mb-6">
-              <label htmlFor="firstName" className="block text-lg font-medium mb-2">Name</label>
-              <input
-                type="text"
-                id="firstName"
-                placeholder="Type your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
-            </div>
-            <div className="mb-6">
-              <label htmlFor="lastName" className="block text-lg font-medium mb-2">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                placeholder="Type your last name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
-            </div>
+            {/* Conditionally render Name and Last Name or Company Name */}
+            {selectedOption === 'individuals' ? (
+              <>
+                <div className="mb-6">
+                  <label htmlFor="name" className="block text-lg font-medium mb-2">Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Type your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="lastName" className="block text-lg font-medium mb-2">Last Name</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    placeholder="Type your last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="mb-6 col-span-2">
+                <label htmlFor="companyName" className="block text-lg font-medium mb-2">Company Name</label>
+                <input
+                  type="text"
+                  id="companyName"
+                  placeholder="Type your company name"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                />
+              </div>
+            )}
+
             <div className="mb-6 col-span-2">
               <label htmlFor="email" className="block text-lg font-medium mb-2">E-Mail</label>
               <input
@@ -122,16 +172,11 @@ const SignupPage = () => {
               </button>
             </div>
             <div className="mb-1 col-span-2">
-              <div className="form-control flex flex-row mt-2">
-                <label className="label cursor-pointer">
-                  <input type="checkbox" className="checkbox checkbox-primary h-4 w-4" />
-                  <span className="label-text font-sans text-sm ml-2">I have read and accept the terms of use.</span>
-                </label>
-              </div>
               <div className="form-control flex flex-row items">
                 <label className="label cursor-pointer">
-                  <input type="checkbox" className="checkbox checkbox-primary h-4 w-4" />
-                  <span className="label-text font-sans text-sm ml-2">I have read and approved the KVKK text.</span>
+                  <input type="checkbox" className="checkbox checkbox-primary h-4 w-4" checked={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)} />
+                  <span className="label-text font-sans text-sm ml-2">Remember me</span>
                 </label>
               </div>
             </div>
@@ -146,7 +191,6 @@ const SignupPage = () => {
           </form>
         </div>
       </div>
-
       <Footer />
     </>
   );

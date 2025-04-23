@@ -3,12 +3,15 @@ import React, { useState } from 'react'
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
+import { useRouter } from 'next/navigation';
+
 
 const LoginPage = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [mail,setMail]=useState('');
     const [password,setPassword]=useState('');
-
+    const router = useRouter();
+    const[rememberMe,setRememberMe]=useState(false);
 
     const handleSubmit = async (e:React.FormEvent)=>{
       e.preventDefault();
@@ -30,7 +33,19 @@ const LoginPage = () => {
         const result = await response.json();
 
         if(result.success){
-          alert("Login success")
+          if (rememberMe) {
+            // Store the user's info (e.g., user_id or token) permanently in localStorage
+            localStorage.setItem('rememberMe','true');
+            localStorage.setItem('userLoggedIn', 'true');
+            localStorage.setItem('userId', result.user_id); // Assuming result contains user_id
+          } else {
+            // Store the user's info for the session in sessionStorage
+            localStorage.setItem('rememberMe','false');
+            sessionStorage.setItem('userLoggedIn', 'true');
+            sessionStorage.setItem('userId', result.user_id); // Assuming result contains user_id
+          }
+          router.push('/');
+          
         }
         else{
           alert(result.message || "Bir hata oluştu!"); // Hata mesajını burada göster
@@ -100,7 +115,8 @@ const LoginPage = () => {
                 
                   <label className="label cursor-pointer">
                     
-                    <input type="checkbox"  className="checkbox checkbox-primary h-4 w-4" />
+                    <input type="checkbox"  className="checkbox checkbox-primary h-4 w-4" checked={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)} />
                     <span className="label-text font-sans text-sm ml-2">Remember me</span>
                   </label>
                 </div>
