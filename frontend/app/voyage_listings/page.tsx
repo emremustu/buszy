@@ -11,9 +11,10 @@ const TripsPage = () => {
   const [voyages, setVoyages] = useState<any[]>([]);  // Initialize as an empty array
 
   // Get query params from URL
-  const origin = searchParams.get('origin');
-  const destination = searchParams.get('destination');
-  const date = searchParams.get('date');
+  const origin = searchParams?.get('origin');
+  const destination = searchParams?.get('destination');
+  const date = searchParams?.get('date');
+
 
   const [voyageData, setVoyageData] = useState({
     origin: origin,
