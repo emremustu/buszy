@@ -7,4 +7,6 @@ urlpatterns = [
     path('get-voyage',views.get_voyage,name='get_voyage'),
     path('add-voyage',views.add_voyage,name='add_voyage'),
     path('get-voyage-list',views.get_voyage_listing,name='get_voyage_listing'),
+    path('update-crew',views.update_crew,name= 'update-crew'),
+    path('update-voyage-list',views.updateCrewListing,new='update_voyage_listing')
 ]

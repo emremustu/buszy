@@ -82,6 +82,17 @@ class Voyage(models.Model):
                 cities_json
             ])
            
+    @staticmethod
+    def update_crew(crew,plate):
+        query= """
+        UPDATE voyage SET crew = %s WHERE bus_plate = %s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                crew,
+                plate,
+            ])
 
 
     @staticmethod
@@ -114,6 +125,8 @@ class VoyageListing(models.Model):
 
     def __str__(self):
         return f"{self.bus_company} - {self.bus_time}"
+    
+
 
     @staticmethod
     def addVoyageListing(bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,voyage_date,bus_plate):
@@ -165,7 +178,19 @@ class VoyageListing(models.Model):
         else:
             return None 
 
-    # def editVoyageListing(bus_time)
+    @staticmethod
+    def updateVoyageListing(list_id,bus_list_begin,bus_list_end):
+        query="""
+        UPDATE voyage_listing SET bus_list_begin = %s bus_list_end = %s WHERE list_id = %s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                bus_list_begin,
+                bus_list_end,
+                list_id,
+            ])
+        
 
 
 

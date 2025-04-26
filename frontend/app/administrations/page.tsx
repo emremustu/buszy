@@ -7,7 +7,7 @@ const adminPage = () => {
     return (
         <>
             <div className='flex flex-col h-screen'>
-                <Navbar></Navbar>
+                
                 <div className='flex flex-col items-center justify-center h-full'>
                     {/*ekrani full olarak aliyor ve footbar-navbari o sekilde ayarliyor h-full*/}
                     <div className="flex flex-wrap space-x-4 p-4">

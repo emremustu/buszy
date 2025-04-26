@@ -161,7 +161,43 @@ def get_voyage_listing_byPlate(request):
 
         plate=data.get('plate')
 
+
+@csrf_exempt
+def update_crew(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
         
+        plate=data.get('plate')
+        crew=data.get('crew')
+
+        try:
+            Voyage.update_crew(crew,plate)
+
+            return JsonResponse({"success":True,"message":"Successfully Updated"})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Error: {str(e)}"})        
+
+@csrf_exempt
+def update_voyage_listing(request):
+    if request.method=='POST':
+        data = json.loads(request.body)
+        list_id=data.get('list_id')
+        bus_list_begin=data.get('bus_list_begin')
+        bus_list_end=data.get('bus_list_end')
+
+        try:
+            VoyageListing.updateVoyageListing(list_id,bus_list_begin,bus_list_end)
+
+            return JsonResponse({"success":True,"message":"Successfully Updated"})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Error: {str(e)}"})        
+
+
+        
+
+
+
+        updateVoyageListing()        
                 
 
 
