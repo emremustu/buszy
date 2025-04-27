@@ -193,11 +193,8 @@ def update_voyage_listing(request):
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"})        
 
 
-        
+    
 
-
-
-        updateVoyageListing()        
                 
 
 
