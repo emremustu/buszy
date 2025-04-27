@@ -46,7 +46,7 @@ def register(request):
             password = data.get('password')
             account_type = data.get('account_type')
 
-            if account_type is "individuals":
+            if account_type == "individuals":
                 if not name or not last_name or not email or not password:
                     return JsonResponse({"success": False, "message": "Eksik alan var!"})
             else:
