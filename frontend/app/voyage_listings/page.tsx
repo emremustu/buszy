@@ -1,20 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation'; // useRouter ekledim
 import Image from 'next/image';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const TripsPage = () => {
   const searchParams = useSearchParams();
-  const [voyages, setVoyages] = useState<any[]>([]);  // Initialize as an empty array
+  const router = useRouter(); // router tanımlandı
+  const [voyages, setVoyages] = useState<any[]>([]);
 
-  // Get query params from URL
   const origin = searchParams?.get('origin');
   const destination = searchParams?.get('destination');
   const date = searchParams?.get('date');
-
 
   const [voyageData, setVoyageData] = useState({
     origin: origin,
@@ -38,13 +37,13 @@ const TripsPage = () => {
 
           const result = await response.json();
           if (result.success) {
-            setVoyages(result.voyages); // Set the voyages in state
+            setVoyages(result.voyages);
           } else {
-            setVoyages([]); // Reset voyages to an empty array if there's no data
+            setVoyages([]);
             console.log("Error fetching voyages");
           }
         } catch (error) {
-          setVoyages([]); // Reset voyages to an empty array in case of an error
+          setVoyages([]);
           console.log("An error occurred:", error);
         }
       };
@@ -52,6 +51,12 @@ const TripsPage = () => {
       fetchVoyages();
     }
   }, [origin, destination, date]);
+
+  // Take a Seat butonuna basınca çalışacak fonksiyon
+  const handleTakeSeat = (voyage: any) => {
+    router.push(`/select-seat?voyageId=${voyage[0]}`);
+    // İstersen buraya voyage ID, saat vb. detayları query olarak gönderebilirsin.
+  };
 
   return (
     <>
@@ -77,27 +82,30 @@ const TripsPage = () => {
 
                 <div className="time-price flex justify-between items-center gap-8">
                   <div className="time-block">
-                    <h2 className="text-3xl text-gray-800">{voyage[2]}</h2> {/* Departure time */}
+                    <h2 className="text-3xl text-gray-800">{voyage[2]}</h2>
                   </div>
                 </div>
 
                 <p className="route text-xl font-semibold text-green-900 text-center mt-3 tracking-wide capitalize">
-                  {voyage[3]} - {voyage[4]} {/* Origin and Destination */}
+                  {voyage[3]} - {voyage[4]}
                 </p>
               </div>
 
               <div className="price-container flex flex-col items-center justify-center gap-4 mt-5">
-                <button className="seat-btn bg-primary text-white py-3 px-6 rounded-full font-bold hover:bg-primarybr hover:scale-105 transition-transform duration-300">
+                <button
+                  onClick={() => handleTakeSeat(voyage)} // Burayı değiştirdik!
+                  className="seat-btn bg-primary text-white py-3 px-6 rounded-full font-bold hover:bg-primarybr hover:scale-105 transition-transform duration-300"
+                >
                   Take a Seat
                 </button>
                 <div className="price text-3xl font-bold text-green-500">
-                  <strong>{voyage[5]} ₺</strong> {/* Price */}
+                  <strong>{voyage[5]} ₺</strong>
                 </div>
               </div>
             </section>
           ))
         ) : (
-          <p>No voyages available for the selected criteria.</p> // Handle when there are no voyages
+          <p>No voyages available for the selected criteria.</p>
         )}
       </div>
 
