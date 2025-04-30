@@ -8,5 +8,6 @@ urlpatterns = [
     path('add-voyage',views.add_voyage,name='add_voyage'),
     path('get-voyage-list',views.get_voyage_listing,name='get_voyage_listing'),
     path('update-crew',views.update_crew,name= 'update-crew'),
-    path('update-voyage-list',views.update_voyage_listing,name='update_voyage_listing')
+    path('update-voyage-list',views.update_voyage_listing,name='update_voyage_listing'),
+    path('set-seats',views.setSeats ,name='setSeats')
 ]

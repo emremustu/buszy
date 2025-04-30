@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from django.http import JsonResponse
-from .models import User, Voyage, VoyageListing
+from .models import Seats, User, Voyage, VoyageListing
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
@@ -193,6 +193,10 @@ def update_voyage_listing(request):
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"})        
 
 
+
+
+
+
     
 
                 
@@ -205,8 +209,6 @@ def add_voyage(request):
 
         bus_company = data.get('bus_company')
         bus_plate = data.get('bus_plate')
-        seats_emp = data.get('seats_emp')
-        seats_full = data.get('seats_full')
         crew = data.get('crew')
         cities = data.get('cities')
 
@@ -218,7 +220,7 @@ def add_voyage(request):
         try:
             with transaction.atomic():
                 # Burada json.dumps kullanmıyoruz çünkü modelin içindeki fonksiyon zaten JSON'a çeviriyor
-                Voyage.create_voyage(bus_company, bus_plate, seats_emp, seats_full, crew, cities)
+                Voyage.create_voyage(bus_company, bus_plate, crew, cities)
                 # Eğer şehirleri yazdırmak istiyorsan cities üzerinde dön
             
                 for i in range(len(cities)):
@@ -239,6 +241,10 @@ def add_voyage(request):
                         price = (distance_km * price_per_km).quantize(Decimal('0.01'))
 
                         VoyageListing.addVoyageListing(bus_company,city_i['time'],city_i['city'],city_j['city'],price,city_i['date'], bus_plate)
+                        for i in range(1,42):
+                            Seats.createSeat(bus_plate,city_i['city'],city_j['city'],i)
+
+                
                     
                     
 
@@ -250,8 +256,69 @@ def add_voyage(request):
 
 
 @csrf_exempt
-def getVoyageList(request):
-    if request.method == 'POST':
+def getSeats(request):
+    if request.method=='POST':
         data=json.loads(request.body)
+        bus_plate=data.get('bus_plate')
+        start_location=data.get('start_location')
+        end_location=data.get('end_location')
 
+        try:
+            data= Seats.getSeats(bus_plate,start_location,end_location)
+
+            return JsonResponse({"success":True, "seats":data})
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})
+            
+
+
+
+@csrf_exempt
+def setSeats(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            user_id=data.get("user_id")
+            list_id=data.get("list_id")
+            plate=data.get("plate")
+            start_location=data.get('start_location')
+            end_location=data.get('end_location')
+            seat_numbers = data.get("seat_numbers", [])
+            seat_info = seat_numbers[0] if seat_numbers else {}
+            time=data.get("time")
+            date=data.get("date")
+
+
+            voyage_listing_data= VoyageListing.getVoyageListByPlate(plate)
+            
+            timeOfEnd_location= None
+            dateOfEnd_location=None
+
+            for a in  voyage_listing_data:      
+                if a[3] == end_location:
+                    timeOfEnd_location=a[2]
+                    dateOfEnd_location=a[7]
+                    break
+                     
+            for a in voyage_listing_data:
+              if a[2]<timeOfEnd_location and a[2]>=time and a[7]< dateOfEnd_location and a[7]>=date:
+                  for seat_no, gender in seat_info.items():
+                    print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
+                    Seats.updateSeat(plate,a[3],a[4],seat_info,"Occupied")
                 
+
+            
+                    
+
+            return JsonResponse({"status": "success"})
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    else:
+        return JsonResponse({"status": "invalid request"}, status=405)
+
+
+
+
+

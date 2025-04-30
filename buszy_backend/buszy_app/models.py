@@ -55,29 +55,23 @@ class User(models.Model):
 class Voyage(models.Model):
     bus_company = models.CharField(max_length=50)
     bus_plate = models.CharField(max_length=10, unique=True,primary_key=True)
-    seats_emp = models.JSONField()
-    seats_full = models.JSONField()
     crew = models.CharField(max_length=100)
     cities = models.JSONField()  # JSON veri tipi ile şehirleri saklamak için
 
 
     @staticmethod
-    def create_voyage(bus_company, bus_plate, seats_emp, seats_full, crew, cities):
+    def create_voyage(bus_company, bus_plate, crew, cities):
         # Python dict'leri JSON string'e çevriliyor
-        seats_emp_json = json.dumps(seats_emp)
-        seats_full_json = json.dumps(seats_full)
         cities_json = json.dumps(cities)
 
         query = """
-            INSERT INTO voyage (bus_company, bus_plate, seats_emp, seats_full, crew, cities)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO voyage (bus_company, bus_plate, crew, cities)
+            VALUES (%s, %s, %s, %s)
         """
         with connection.cursor() as cursor:
             cursor.execute(query, [
                 bus_company,
                 bus_plate,
-                seats_emp_json,
-                seats_full_json,
                 crew,
                 cities_json
             ])
@@ -163,6 +157,8 @@ class VoyageListing(models.Model):
         db_table = 'voyage_listing'  # Veritabanındaki tablo adı
 
 
+
+
     @staticmethod
     def getVoyageListByPlate(plate):
         query="""
@@ -178,6 +174,9 @@ class VoyageListing(models.Model):
         else:
             return None 
 
+    
+
+
     @staticmethod
     def updateVoyageListing(list_id,bus_list_begin,bus_list_end):
         query="""
@@ -192,24 +191,56 @@ class VoyageListing(models.Model):
             ])
         
 
+class Seats(models.Model):
+    bus_plate=models.ForeignKey(Voyage,on_delete=models.CASCADE,related_name='voyage_seats')
+    start_location = models.CharField(max_length=20)
+    end_location = models.CharField(max_length=20)
+    seat = models.IntegerField()
+    seat_status= models.CharField(max_length=50)
+    gender=models.CharField(max_length=10)
 
 
-    #VOYAGES TABLE
-    #bus_id
-    #firma
-    #destinations
-    #bus_plaka
-    #uygun_koltuklar
-    #dolu_koltuklar
-    #crew_driver
+    @staticmethod
+    def getSeats(bus_plate,origin,destination):
+        query="""
+        SELECT * FROM seats WHERE bus_plate= %s AND start_location = %s AND end_location= %s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                bus_plate,
+                origin,
+                destination
+            ])
 
+    @staticmethod
+    def createSeat(bus_plate,start_location,end_location,seat):
+        query="""
+        INSERT INTO seats (bus_plate, start_location, end_location, seat, seat_status, gender) VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                bus_plate,
+                start_location,
+                end_location,
+                seat,
+                "Avaliable",
+                "None"
+            ])
 
-    #VOYAGES LISTING
-    #voyages_listing_id
-    #firma
-    #saat
-    #where
-    #towhere
-    #price
-    #bus_id (foreign key)
-
+    @staticmethod
+    def updateSeat(bus_plate,start_location,end_location,seat,seat_status,gender):
+        query="""
+        UPDATE seats SET seat_status= %s gender=%s WHERE bus_plate=%s seat=%s start_location=%s end-location=%s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                seat_status,
+                gender,
+                bus_plate,
+                seat,
+                start_location,
+                end_location
+            ])
