@@ -51,7 +51,7 @@ const reportPage = () => {
         const data = { bus_plate, field, value };  // Send the updated data to the backend
 
         try {
-            const response = await fetch('http://localhost:8000/api/update-voyage', {
+            const response = await fetch('http://localhost:8000/api/update-voyage-list', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const reportPage = () => {
             console.error("Error during update:", error);
             setResponseMessage("Error during update, please try again.");
         }
-    };
+    }; 
 
     return (
         <>
@@ -103,7 +103,7 @@ const reportPage = () => {
                                     <div className="mt-4">
                                         <p><strong>Bus Plate:</strong> {voyageData[2]}</p>
                                         <div className='flex flex-row items-center space-x-5'>
-                                            <p><strong>Crew:</strong> {voyageData[5]}</p>
+                                            <p><strong>Crew:</strong> {voyageData[3]}</p>
                                             <button
                                                 type='button'
                                                 onClick={() => handleInputVisibility('crew')}
