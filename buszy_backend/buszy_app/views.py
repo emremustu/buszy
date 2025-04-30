@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
@@ -161,6 +162,13 @@ def get_voyage_listing_byPlate(request):
 
         plate=data.get('plate')
 
+        try:    
+            voyagelisting_data = VoyageListing.getVoyageListByPlate(plate)
+            return JsonResponse({"success":True,"voyage_list":voyagelisting_data})
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error:{str(e)}"})
+
+
 
 @csrf_exempt
 def update_crew(request):
@@ -184,9 +192,10 @@ def update_voyage_listing(request):
         list_id=data.get('list_id')
         bus_list_begin=data.get('bus_list_begin')
         bus_list_end=data.get('bus_list_end')
+        bus_time=data.get('bus_time')
 
         try:
-            VoyageListing.updateVoyageListing(list_id,bus_list_begin,bus_list_end)
+            VoyageListing.updateVoyageListing(list_id,bus_list_begin,bus_list_end,bus_time)
 
             return JsonResponse({"success":True,"message":"Successfully Updated"})
         except Exception as e:
@@ -279,46 +288,54 @@ def setSeats(request):
         try:
             data = json.loads(request.body)
 
-            user_id=data.get("user_id")
-            list_id=data.get("list_id")
-            plate=data.get("plate")
-            start_location=data.get('start_location')
-            end_location=data.get('end_location')
+            user_id = data.get("user_id")
+            list_id = data.get("list_id")
+            plate = data.get("plate")
+            start_location = data.get('start_location')
+            end_location = data.get('end_location')
             seat_numbers = data.get("seat_numbers", [])
             seat_info = seat_numbers[0] if seat_numbers else {}
-            time=data.get("time")
-            date=data.get("date")
+            time = data.get("time")
+            date = data.get("date")
 
+            # Varsayılan değer atama (eğer eksikse)
+            if not time or not date:
+                raise ValueError("Time or Date information is missing!")
 
-            voyage_listing_data= VoyageListing.getVoyageListByPlate(plate)
+            voyage_listing_data = VoyageListing.getVoyageListByPlate(plate)
             
-            timeOfEnd_location= None
-            dateOfEnd_location=None
+            timeOfEnd_location = None
+            dateOfEnd_location = None
 
-            for a in  voyage_listing_data:      
+            # End location time and date extraction
+            for a in voyage_listing_data:      
                 if a[3] == end_location:
-                    timeOfEnd_location=a[2]
-                    dateOfEnd_location=a[7]
+                    timeOfEnd_location = a[2]
+                    dateOfEnd_location = a[6]
                     break
-                     
-            for a in voyage_listing_data:
-              if a[2]<timeOfEnd_location and a[2]>=time and a[7]< dateOfEnd_location and a[7]>=date:
-                  for seat_no, gender in seat_info.items():
-                    print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
-                    Seats.updateSeat(plate,a[3],a[4],seat_info,"Occupied")
-                
 
-            
-                    
+            if not timeOfEnd_location or not dateOfEnd_location:
+                raise ValueError("End location time or date is missing!")
+
+            print(timeOfEnd_location)
+            print(dateOfEnd_location)
+
+            datetime1 = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+            datetime2 = datetime.strptime(f"{dateOfEnd_location} {timeOfEnd_location}", "%Y-%m-%d %H:%M:%S")
+
+            # Process seats
+            for a in voyage_listing_data:
+                dateofVoyage = datetime.strptime(f"{a[6]} {a[2]}", "%Y-%m-%d %H:%M:%S")
+                if datetime1 <= dateofVoyage < datetime2:
+                    for seat_no, gender in seat_info.items():
+                        print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
+                        Seats.updateSeat(plate, a[3], a[4], seat_no, "Occupied", gender)
 
             return JsonResponse({"status": "success"})
 
+        except ValueError as ve:
+            return JsonResponse({"status": "error", "message": str(ve)}, status=400)
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
     else:
         return JsonResponse({"status": "invalid request"}, status=405)
-
-
-
-
-
