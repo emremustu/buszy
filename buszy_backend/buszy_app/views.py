@@ -268,13 +268,12 @@ def add_voyage(request):
 def getSeats(request):
     if request.method=='POST':
         data=json.loads(request.body)
-        bus_plate=data.get('bus_plate')
+        bus_plate=data.get('plate')
         start_location=data.get('start_location')
         end_location=data.get('end_location')
 
         try:
             data= Seats.getSeats(bus_plate,start_location,end_location)
-
             return JsonResponse({"success":True, "seats":data})
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})
