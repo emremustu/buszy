@@ -178,9 +178,9 @@ class VoyageListing(models.Model):
 
 
     @staticmethod
-    def updateVoyageListing(list_id,bus_list_begin,bus_list_end,bus_time):
+    def updateVoyageListing(list_id,bus_list_begin,bus_list_end,bus_time,bus_list_price,voyage_date):
         query="""
-        UPDATE voyage_listing SET bus_list_begin = %s bus_list_end = %s bus_time=%s WHERE list_id = %s
+        UPDATE voyage_listing SET bus_list_begin = %s, bus_list_end = %s, bus_time=%s, bus_list_price=%s, voyage_date=%s WHERE list_id = %s
         """
         from django.db import connection
         with connection.cursor() as cursor:
@@ -188,6 +188,8 @@ class VoyageListing(models.Model):
                 bus_list_begin,
                 bus_list_end,
                 bus_time,
+                bus_list_price,
+                voyage_date,
                 list_id,
             ])
         
@@ -255,3 +257,5 @@ class Seats(models.Model):
                 start_location,
                 end_location
             ])
+
+    

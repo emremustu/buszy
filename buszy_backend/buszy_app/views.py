@@ -193,20 +193,15 @@ def update_voyage_listing(request):
         bus_list_begin=data.get('bus_list_begin')
         bus_list_end=data.get('bus_list_end')
         bus_time=data.get('bus_time')
+        price=data.get('price')
+        date=data.get('date')
 
         try:
-            VoyageListing.updateVoyageListing(list_id,bus_list_begin,bus_list_end,bus_time)
+            VoyageListing.updateVoyageListing(list_id,bus_list_begin,bus_list_end,bus_time,price,date)
 
             return JsonResponse({"success":True,"message":"Successfully Updated"})
         except Exception as e:
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"})        
-
-
-
-
-
-
-    
 
                 
 
