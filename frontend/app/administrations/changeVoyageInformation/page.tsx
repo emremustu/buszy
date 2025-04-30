@@ -13,7 +13,7 @@ const reportPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const data = { bus_plate: bus_plate };
+        const data = { plate: bus_plate };
 
         try {
             const response = await fetch('http://localhost:8000/api/get_voyage_listing_by_plate', {
@@ -49,7 +49,7 @@ const reportPage = () => {
         }));
     };
 
-    /*const handleUpdate = async (field: string, value: string) => {
+    const handleUpdate = async (field: string, value: string) => {
         const data = { bus_plate, field, value };  // Send the updated data to the backend
 
         try {
@@ -73,7 +73,7 @@ const reportPage = () => {
             console.error("Error during update:", error);
             setResponseMessage("Error during update, please try again.");
         }
-    };*/
+    };
 
     return (
         <>
