@@ -5,8 +5,8 @@ import React, { useState } from 'react'
 
 const reportPage = () => {
     const [bus_plate, setBus_plate] = useState('');
-    const [responseMessage, setResponseMessage] = useState<string>(''); 
-    const [voyageData, setVoyageData] = useState<any>(null);
+    const [responseMessage, setResponseMessage] = useState<string>('');
+    const [voyageData, setVoyageData] = useState<any[]>([]);
     const [inputVisible, setInputVisible] = useState<{ [key: string]: boolean }>({});
     const [updatedData, setUpdatedData] = useState<any>({}); // Hold the updated data for crew and cities
 
@@ -16,7 +16,7 @@ const reportPage = () => {
         const data = { bus_plate: bus_plate };
 
         try {
-            const response = await fetch('http://localhost:8000/api/get-voyage', {
+            const response = await fetch('http://localhost:8000/api/get_voyage_listing_by_plate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,17 +27,19 @@ const reportPage = () => {
             const result = await response.json();
 
             if (result.success) {
+                alert(result.voyage_list);
                 setResponseMessage("Voyage:");
-                setVoyageData(result.voyage);
+                setVoyageData(result.voyage_list);
             } else {
                 setResponseMessage(result.message || "An error occurred!");
-                setVoyageData(null);
+                setVoyageData([]);
             }
         } catch (error) {
             console.error("Error during fetch:", error);
             setResponseMessage("An error occurred, please try again.");
-            setVoyageData(null);
+            setVoyageData([]);
         }
+        console.log(voyageData);
     };
 
     const handleInputVisibility = (key: string) => {
@@ -47,7 +49,7 @@ const reportPage = () => {
         }));
     };
 
-    const handleUpdate = async (field: string, value: string) => {
+    /*const handleUpdate = async (field: string, value: string) => {
         const data = { bus_plate, field, value };  // Send the updated data to the backend
 
         try {
@@ -71,7 +73,7 @@ const reportPage = () => {
             console.error("Error during update:", error);
             setResponseMessage("Error during update, please try again.");
         }
-    }; 
+    };*/
 
     return (
         <>
@@ -95,39 +97,43 @@ const reportPage = () => {
                 </div>
 
                 <div className='flex flex-row justify-center items-center'>
-                    {responseMessage && (
-                        <div className='flex flex-col items-center justify-center'>
-                            <div className="mt-5 p-4 border rounded-md bg-gray-100">
-                                <h2 className="text-lg font-semibold">{responseMessage}</h2>
-                                {voyageData && (
-                                    <div className="mt-4">
-                                        <p><strong>Bus Plate:</strong> {voyageData[2]}</p>
-                                        <div className='flex flex-row items-center space-x-5'>
-                                            <p><strong>Crew:</strong> {voyageData[3]}</p>
-                                            <button
-                                                type='button'
-                                                onClick={() => handleInputVisibility('crew')}
-                                                className='ml-4 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full'>
-                                                +
-                                            </button>
+                    {voyageData && voyageData.length > 0 ? (
+                        voyageData.map((voyage, index) =>
+                            <div className='flex flex-col items-center justify-center'>
+                                <div className="mt-5 p-4 border rounded-md bg-gray-100">
+                                    <h2 className="text-lg font-semibold">{responseMessage}</h2>
+                                    {voyageData && (
+                                        <div className="mt-4">
+                                            <p><strong>Bus Plate:</strong> {voyage[7]}</p>
+
+                                            <div className='flex flex-row items-center space-x-5'>
+                                                <p><strong>Origin:</strong> {voyage[3]}</p>
+                                                <button
+                                                    type='button'
+                                                    onClick={() => handleInputVisibility('Origin')}
+                                                    className='ml-4 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full'>
+                                                    +
+                                                </button>
+                                                <p><strong>Destination:</strong> {voyage[4]}</p>
+                                                <button
+                                                    type='button'
+                                                    onClick={() => handleInputVisibility('Destination')}
+                                                    className='ml-4 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full'>
+                                                    +
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className='flex flex-row items-center space-x-5'>
-                                            <p><strong>Cities:</strong> {}</p>
-                                            <button
-                                                type='button'
-                                                onClick={() => handleInputVisibility('cities')}
-                                                className='ml-4 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full'>
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        )
+
+                    ) : (
+                        <p>No plate founded.</p>
                     )}
 
-                    {/* Handle Crew input visibility */}
-                    {inputVisible.crew && (
+
+                    {/* {inputVisible.crew && (
                         <div className="ml-4">
                             <input
                                 type="text"
@@ -136,10 +142,10 @@ const reportPage = () => {
                                 onBlur={(e) => handleUpdate('crew', e.target.value)} // Update on input blur
                             />
                         </div>
-                    )}
+                    )} */}
 
                     {/* Handle Cities input visibility */}
-                    {inputVisible.cities && (
+                    {/* {inputVisible.cities && (
                         <div className="ml-4">
                             <input
                                 type="text"
@@ -148,9 +154,8 @@ const reportPage = () => {
                                 onBlur={(e) => handleUpdate('cities', e.target.value)} // Update on input blur
                             />
                         </div>
-                    )}
+                    )} */}
                 </div>
-
                 <div className='mt-auto'></div>
                 <Footer />
             </div>
