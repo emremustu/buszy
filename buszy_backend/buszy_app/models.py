@@ -202,17 +202,25 @@ class Seats(models.Model):
 
 
     @staticmethod
-    def getSeats(bus_plate,origin,destination):
+    def getSeats(bus_plate,start_location,end_location):
         query="""
-        SELECT * FROM seats WHERE bus_plate= %s AND start_location = %s AND end_location= %s
+        SELECT * FROM seats WHERE bus_plate=%s AND start_location =%s AND end_location=%s
         """
         from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute(query,[
                 bus_plate,
-                origin,
-                destination
+                start_location,
+                end_location
             ])
+            data = cursor.fetchall()
+
+        if data:
+            return data
+        else:
+            return None 
+
+
 
     @staticmethod
     def createSeat(bus_plate,start_location,end_location,seat):
