@@ -6,9 +6,24 @@ import React, { useState } from 'react'
 const reportPage = () => {
     const [bus_plate, setBus_plate] = useState('');
     const [responseMessage, setResponseMessage] = useState<string>('');
-    const [voyageData, setVoyageData] = useState<any[]>([]);
     const [inputVisible, setInputVisible] = useState<{ [key: string]: boolean }>({});
     const [updatedData, setUpdatedData] = useState<any>({}); // Hold the updated data for crew and cities
+    const [isEditing, setIsEditing] = useState<{ [key: number]: boolean }>({});
+    const [voyageData, setVoyageData] = useState<string[][]>([]);
+    const [rowMessages, setRowMessages] = useState<{ [key: number]: string }>({});
+
+
+
+
+
+    const handleEditToggle = (index: number) => {
+        setIsEditing(prev => ({
+            ...prev,
+            [index]: !prev[index],
+        }));
+    };
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,7 +42,7 @@ const reportPage = () => {
             const result = await response.json();
 
             if (result.success) {
-                alert(result.voyage_list);
+
                 setResponseMessage("Voyage:");
                 setVoyageData(result.voyage_list);
             } else {
@@ -49,8 +64,15 @@ const reportPage = () => {
         }));
     };
 
-    const handleUpdate = async (field: string, value: string) => {
-        const data = { bus_plate, field, value };  // Send the updated data to the backend
+    const handleUpdate = async (field: string, value: string | string[], index?: number) => {
+        const data = {
+            list_id: value[0],
+            bus_time: value[2],
+            bus_list_begin: value[3],
+            bus_list_end: value[4],
+            price: value[5],
+            date: value[6],
+        };
 
         try {
             const response = await fetch('http://localhost:8000/api/update-voyage-list', {
@@ -65,7 +87,29 @@ const reportPage = () => {
 
             if (result.success) {
                 setResponseMessage(`Successfully updated ${field}`);
-                setVoyageData((prevData: any) => ({ ...prevData, [field]: value }));
+
+                // 👇 Edit modunu kapat
+                if (typeof index === 'number') {
+                    setIsEditing((prev) => ({
+                        ...prev,
+                        [index]: false,
+                    }));
+                    // Satıra özel mesajı göster
+                    setRowMessages((prev) => ({
+                        ...prev,
+                        [index]: 'Successfully updated',
+                    }));
+
+                    // 3 saniye sonra sil
+                    setTimeout(() => {
+                        setRowMessages((prev) => {
+                            const updated = { ...prev };
+                            delete updated[index];
+                            return updated;
+                        });
+                    }, 3000);
+                }
+
             } else {
                 setResponseMessage(`Failed to update ${field}: ${result.message}`);
             }
@@ -96,65 +140,57 @@ const reportPage = () => {
                     </div>
                 </div>
 
-                <div className='flex flex-row justify-center items-center'>
-                    {voyageData && voyageData.length > 0 ? (
-                        voyageData.map((voyage, index) =>
-                            <div className='flex flex-col items-center justify-center'>
-                                <div className="mt-5 p-4 border rounded-md bg-gray-100">
-                                    <h2 className="text-lg font-semibold">{responseMessage}</h2>
-                                    {voyageData && (
-                                        <div className="mt-4">
-                                            <p><strong>Bus Plate:</strong> {voyage[7]}</p>
+                <div className='flex flex-col justify-center items-center my-20'>
+                    {voyageData.map((voyage: string[], index: number) => (
+                        <div key={index} className='flex flex-col items-center justify-center mt-10'>
+                            <form onSubmit={(e) => e.preventDefault()}>
+                                <div className='flex flex-col bg-gray-50 items-center p-4 rounded shadow'>
+                                    <div className='flex flex-row justify-center items-center flex-wrap'>
+                                        {voyage.map((field: string, fieldIndex: number) => (
+                                            <input
+                                                key={fieldIndex}
+                                                type="text"
+                                                className='m-2 p-2 border border-gray-300 rounded'
+                                                value={field}
+                                                disabled={!isEditing[index] || fieldIndex === 0 || fieldIndex === 1 || fieldIndex === 7}
 
-                                            <div className='flex flex-row items-center space-x-5'>
-                                                <p><strong>Origin:</strong> {voyage[3]}</p>
-                                                <button
-                                                    type='button'
-                                                    onClick={() => handleInputVisibility('Origin')}
-                                                    className='ml-4 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full'>
-                                                    +
-                                                </button>
-                                                <p><strong>Destination:</strong> {voyage[4]}</p>
-                                                <button
-                                                    type='button'
-                                                    onClick={() => handleInputVisibility('Destination')}
-                                                    className='ml-4 bg-black text-white w-8 h-8 flex items-center justify-center rounded-full'>
-                                                    +
-                                                </button>
-                                            </div>
-                                        </div>
+                                                onChange={(e) => {
+                                                    const newData = [...voyageData];
+                                                    newData[index][fieldIndex] = e.target.value;
+                                                    setVoyageData(newData);
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className="flex gap-3 mt-4">
+                                        <button
+                                            type='button'
+                                            className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600'
+                                            onClick={() => handleEditToggle(index)}
+                                        >
+                                            {isEditing[index] ? 'Cancel' : 'Edit'}
+                                        </button>
+                                        {isEditing[index] && (
+                                            <button
+                                                type='button'
+                                                className='bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600'
+                                                onClick={() => handleUpdate('voyage_row', voyage, index)}
+                                            >
+                                                Save
+                                            </button>
+
+
+                                        )}
+                                    </div>
+                                    {rowMessages[index] && (
+                                        <p className="text-green-600 text-sm mt-2">{rowMessages[index]}</p>
                                     )}
                                 </div>
-                            </div>
-                        )
-
-                    ) : (
-                        <p>No plate founded.</p>
-                    )}
-
-
-                    {/* {inputVisible.crew && (
-                        <div className="ml-4">
-                            <input
-                                type="text"
-                                className="p-2 border border-gray-300 rounded-md"
-                                placeholder="Update Crew"
-                                onBlur={(e) => handleUpdate('crew', e.target.value)} // Update on input blur
-                            />
+                            </form>
                         </div>
-                    )} */}
+                    ))}
 
-                    {/* Handle Cities input visibility */}
-                    {/* {inputVisible.cities && (
-                        <div className="ml-4">
-                            <input
-                                type="text"
-                                className="p-2 border border-gray-300 rounded-md"
-                                placeholder="Update Cities"
-                                onBlur={(e) => handleUpdate('cities', e.target.value)} // Update on input blur
-                            />
-                        </div>
-                    )} */}
+
                 </div>
                 <div className='mt-auto'></div>
                 <Footer />
