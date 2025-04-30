@@ -48,16 +48,15 @@ const CardComponent = () => {
         console.log("Voyage Data:", voyageData); // voyageData'nın verisini kontrol et
     }, [voyageData]); // voyageData değiştiğinde çalışacak
 
-    // Cities verisini city - date - time formatında dönüştür
-    const formatCities = (cities: any) => {
-        // Eğer cities bir dizi değilse, boş bir dizi döndür
-        if (!Array.isArray(cities)) {
+    // 
+    const formatCities = (cityData: string) => {
+        try {
+            const cities = JSON.parse(cityData); // Parse the string into an array
+            return cities.map((city: any) => `${city.city} - ${city.date} - ${city.time}`).join(', ');
+        } catch (error) {
+            console.error("Error parsing cities:", error);
             return "No cities data available";
         }
-
-        return cities.map((cityData: any) => {
-            return `${cityData.city} - ${cityData.date} - ${cityData.time}`;
-        }).join(', ');
     };
 
     return (
@@ -93,7 +92,7 @@ const CardComponent = () => {
                                     <p><strong>Bus ID:</strong> {voyageData[0]}</p>
                                     <p><strong>Bus Plate:</strong> {voyageData[2]}</p>
                                     <p><strong>Crew:</strong> {voyageData[3]}</p>
-                                    <p><strong>Cities:</strong> {voyageData[4] && formatCities(voyageData[4])}</p> {/* Cities formatla */}
+                                    <p><strong>Cities:</strong> {formatCities(voyageData[4])}</p> 
                                 </div>
                             )}
                         </div>
