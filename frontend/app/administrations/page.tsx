@@ -1,7 +1,7 @@
 import React from 'react'
-import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Link from 'next/link'
+import Navbar from '../components/Navbar'
 
 const adminPage = () => {
     return (
@@ -12,7 +12,6 @@ const adminPage = () => {
                     {/*ekrani full olarak aliyor ve footbar-navbari o sekilde ayarliyor h-full*/}
                     <div className="flex flex-wrap space-x-4 p-4">
                         {/* See Voyages Button */}
-
                         <div className='flex flex-col space-y-5 '>
                             <Link href='/administrations/seeVoyages' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 w-124 flex items-center justify-center ">
                                 See Voyages
@@ -24,7 +23,7 @@ const adminPage = () => {
                                 </Link>
 
                                 {/* Change Voyage Information Button */}
-                                <Link href='/administrations/changeVoyageInformation' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 space-x-15">
+                                <Link href='/administrations/changeVoyageInformation' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 space-x-15 items-center justify-center">
                                     Change Voyage Information
                                 </Link>
                                 <button className='bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57'>
@@ -32,11 +31,6 @@ const adminPage = () => {
                                 </button>
                             </div>
                             <div className='flex flex-row space-x-10'>
-                                {/* Report a Delay Button */}
-                                <Link href='/administrations/reportDelay' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
-                                    Report a Delay
-                                </Link>
-
                                 {/* Manage Tickets Button */}
                                 <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
                                     Manage Tickets
