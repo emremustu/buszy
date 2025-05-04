@@ -263,8 +263,8 @@ class Seats(models.Model):
 class Tickets(models.Model):
     ticket_id=models.AutoField(primary_key=True)
     user_id=models.IntegerField()
-    origin=models.CharField(20)
-    destination=models.CharField(20)
+    origin=models.CharField(max_length=20)
+    destination=models.CharField(max_length=20)
     voyage_date = models.DateField()
     voyage_time = models.TimeField()
 
