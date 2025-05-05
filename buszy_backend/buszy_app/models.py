@@ -271,8 +271,19 @@ class Tickets(models.Model):
     class Meta:
         db_table = 'tickets' 
 
-    # @staticmethod
-    # def createTicket(user_id,origin,destination,voyage_date,voyage_time):
-
+    @staticmethod
+    def createTicket(user_id,origin,destination,voyage_date,voyage_time):
+        query="""
+        INSERT INTO tickets (user_id, origin, destination, voyage_date, voyage_time) VALUES (%s,%s,%s,%s,%s)
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                user_id,
+                origin,
+                destination,
+                voyage_date,
+                voyage_time
+            ])
 
 
