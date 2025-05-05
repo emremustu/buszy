@@ -363,3 +363,18 @@ def setSeats(request):
     else:
         # Return an error if the request method is not POST
         return JsonResponse({"status": "invalid request"}, status=405)
+
+@csrf_exempt
+def getTickets(request):
+    if request.method=='POST':
+        try:
+            data= json.loads(request.body)
+            origin=data.get('origin')
+            destination=data.get('destination')
+            date=data.get('date')
+            company=data.get('company')
+
+            result=Tickets.getTickets(origin,destination,date,company)
+            return JsonResponse({"status": "success","tickets":result})
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    

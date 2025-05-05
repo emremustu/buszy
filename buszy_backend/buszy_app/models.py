@@ -294,4 +294,34 @@ class Tickets(models.Model):
                 company
             ])
 
+    @staticmethod
+    def getTickets(origin,destination,date,company):
+        query="""
+        SELECT * FROM tickets WHERE origin=%s AND destination=%s AND voyage_date = %s AND company =%s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                origin,
+                destination,
+                date,
+                company
+            ])
+            data = cursor.fetchall()
 
+            if data:
+                return data
+            else:
+                return None
+
+
+
+class Comments(models.Model):
+    comment_id=models.AutoField(primary_key=True)
+    rate = models.IntegerField()
+    user_id=models.IntegerField()
+    user_comment=models.CharField(max_length=255)
+    ticket_id = models.IntegerField()
+
+
+    
