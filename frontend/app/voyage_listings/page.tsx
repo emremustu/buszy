@@ -103,9 +103,10 @@ const TripsPage = () => {
 
               {expandedVoyageIndex === index && (
                 <div className="mt-6">
-                  <SeatSelection />
+                  <SeatSelection voyage={voyage} voyageData={voyageData} />
                 </div>
               )}
+
             </div>
           ))
         ) : (
