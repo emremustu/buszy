@@ -271,14 +271,16 @@ class Tickets(models.Model):
     destination=models.CharField(max_length=20)
     voyage_date = models.DateField()
     voyage_time = models.TimeField()
+    seat=models.IntegerField()
+    list_id = models.ForeignKey(VoyageListing,on_delete=models.CASCADE,related_name='voyage_listing')
 
     class Meta:
         db_table = 'tickets' 
 
     @staticmethod
-    def createTicket(user_id,origin,destination,voyage_date,voyage_time):
+    def createTicket(user_id,origin,destination,voyage_date,voyage_time,seat,company):
         query="""
-        INSERT INTO tickets (user_id, origin, destination, voyage_date, voyage_time) VALUES (%s,%s,%s,%s,%s)
+        INSERT INTO tickets (user_id, origin, destination, voyage_date, voyage_time, seat, company) VALUES (%s,%s,%s,%s,%s,%s,%s)
         """
         from django.db import connection
         with connection.cursor() as cursor:
@@ -287,7 +289,9 @@ class Tickets(models.Model):
                 origin,
                 destination,
                 voyage_date,
-                voyage_time
+                voyage_time,
+                seat,
+                company
             ])
 
 
