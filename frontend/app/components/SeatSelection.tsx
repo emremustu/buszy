@@ -42,7 +42,8 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
             gender,
         }));
 
-        router.push(`/ticket?seats=${encodeURIComponent(JSON.stringify(selectedSeats))}&origin=${voyageData.origin}&destination=${voyageData.destination}&date=${voyageData.date}&time=${voyage[2]}&price=${voyage[5]}`);
+        router.push(`/ticket?seats=${encodeURIComponent(JSON.stringify(selectedSeats))}&origin=${voyageData.origin}&destination=${voyageData.destination}&date=${voyageData.date}&time=${voyage[2]}&price=${voyage[5]
+            }&plate=${voyage[7]}&list_id=${voyage[0]}`);
     };
 
     const layout = [
@@ -121,3 +122,17 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
 };
 
 export default SeatSelection;
+
+
+
+
+
+
+
+
+
+
+
+
+
+

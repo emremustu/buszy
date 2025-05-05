@@ -161,18 +161,22 @@ class VoyageListing(models.Model):
 
     @staticmethod
     def getVoyageListByPlate(plate):
-        query="""
+        query = """
         SELECT * FROM voyage_listing WHERE bus_plate=%s;
         """
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query,[plate])
+            cursor.execute(query, [plate])
             voyage_data = cursor.fetchall()
+
+        # Log all the fetched data to check the format
+        #print("Fetched voyage data:", voyage_data)
 
         if voyage_data:
             return voyage_data
         else:
-            return None 
+            return None
+
 
     
 
