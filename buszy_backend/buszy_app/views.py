@@ -279,57 +279,73 @@ def getSeats(request):
 @csrf_exempt
 def setSeats(request):
     if request.method == 'POST':
+        print(request.body)
         try:
+            # Parse the incoming JSON data
             data = json.loads(request.body)
 
+            # Extract the required fields from the request data
             user_id = data.get("user_id")
             list_id = data.get("list_id")
             plate = data.get("plate")
             start_location = data.get('start_location')
             end_location = data.get('end_location')
-            seat_numbers = data.get("seat_numbers", [])
-            seat_info = seat_numbers[0] if seat_numbers else {}
+            seat_numbers = data.get("seat_numbers", [])  # Expecting a list of seat objects
             time = data.get("time")
             date = data.get("date")
 
-            # Varsayılan değer atama (eğer eksikse)
+            # Ensure that time and date are provided
             if not time or not date:
                 raise ValueError("Time or Date information is missing!")
 
+            # Fetch the voyage listing data for the given plate
             voyage_listing_data = VoyageListing.getVoyageListByPlate(plate)
-            
+
+            print("Voyage Listing Data:", voyage_listing_data)  # Debug print
+
             timeOfEnd_location = None
             dateOfEnd_location = None
 
-            # End location time and date extraction
-            for a in voyage_listing_data:      
+            # Extract the time and date for the end location from the voyage listing data
+            for a in voyage_listing_data:
+                print(f"Checking end_location: {a[3]}")  # Debug print
+                print(a[3])
                 if a[3] == end_location:
+                    
                     timeOfEnd_location = a[2]
                     dateOfEnd_location = a[6]
                     break
 
+            # If no time or date was found for the end location, raise an error
             if not timeOfEnd_location or not dateOfEnd_location:
                 raise ValueError("End location time or date is missing!")
 
-            print(timeOfEnd_location)
-            print(dateOfEnd_location)
+            print(f"Time for end location: {timeOfEnd_location}, Date for end location: {dateOfEnd_location}")  # Debug print
 
+            # Convert the given date and time to datetime objects
             datetime1 = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
             datetime2 = datetime.strptime(f"{dateOfEnd_location} {timeOfEnd_location}", "%Y-%m-%d %H:%M:%S")
 
-            # Process seats
+            # Process each seat number and gender from the seat_numbers list
             for a in voyage_listing_data:
                 dateofVoyage = datetime.strptime(f"{a[6]} {a[2]}", "%Y-%m-%d %H:%M:%S")
                 if datetime1 <= dateofVoyage < datetime2:
-                    for seat_no, gender in seat_info.items():
-                        print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
-                        Seats.updateSeat(plate, a[3], a[4], seat_no, "Occupied", gender)
+                    for seat in seat_numbers:
+                        seat_no = seat.get("seat")
+                        gender = seat.get("gender")
+                        if seat_no and gender:
+                            print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
+                            Seats.updateSeat(plate, a[3], a[4], seat_no, "Occupied", gender)
 
+            # Return a success response
             return JsonResponse({"status": "success"})
 
         except ValueError as ve:
+            # Return an error response if there is a missing value
             return JsonResponse({"status": "error", "message": str(ve)}, status=400)
         except Exception as e:
+            # Return an error response for other exceptions
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
     else:
+        # Return an error if the request method is not POST
         return JsonResponse({"status": "invalid request"}, status=405)
