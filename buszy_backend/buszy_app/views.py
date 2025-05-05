@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from django.http import JsonResponse
-from .models import Seats, User, Voyage, VoyageListing
+from .models import Seats, Tickets, User, Voyage, VoyageListing
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
@@ -306,39 +306,53 @@ def setSeats(request):
             timeOfEnd_location = None
             dateOfEnd_location = None
 
-            # Extract the time and date for the end location from the voyage listing data
+
             for a in voyage_listing_data:
-                print(f"Checking end_location: {a[3]}")  # Debug print
-                print(a[3])
                 if a[3] == end_location:
-                    
                     timeOfEnd_location = a[2]
                     dateOfEnd_location = a[6]
                     break
 
-            # If no time or date was found for the end location, raise an error
+            # If no time or date was found for the end location
             if not timeOfEnd_location or not dateOfEnd_location:
-                raise ValueError("End location time or date is missing!")
-
-            print(f"Time for end location: {timeOfEnd_location}, Date for end location: {dateOfEnd_location}")  # Debug print
-
-            # Convert the given date and time to datetime objects
-            datetime1 = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
-            datetime2 = datetime.strptime(f"{dateOfEnd_location} {timeOfEnd_location}", "%Y-%m-%d %H:%M:%S")
-
-            # Process each seat number and gender from the seat_numbers list
-            for a in voyage_listing_data:
-                dateofVoyage = datetime.strptime(f"{a[6]} {a[2]}", "%Y-%m-%d %H:%M:%S")
-                if datetime1 <= dateofVoyage < datetime2:
+                for a in voyage_listing_data:
                     for seat in seat_numbers:
-                        seat_no = seat.get("seat")
-                        gender = seat.get("gender")
-                        if seat_no and gender:
-                            print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
-                            Seats.updateSeat(plate, a[3], a[4], seat_no, "Occupied", gender)
+                            seat_no = seat.get("seat")
+                            gender = seat.get("gender")
+                            if seat_no and gender:
+                                print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
+                                Seats.updateSeat(plate, a[3], a[4], seat_no, "Occupied", gender)
+                
+                for seat in seat_numbers:
+                    seat_no=seat.get("seat")
+                    company=voyage_listing_data[0][1]
+                    Tickets.createTicket(user_id,start_location,end_location,date,time,seat_no,company)
 
-            # Return a success response
-            return JsonResponse({"status": "success"})
+                
+                return JsonResponse({"status": "success"})                  
+            else:
+                print(f"Time for end location: {timeOfEnd_location}, Date for end location: {dateOfEnd_location}")  # Debug print
+
+                # Convert the given date and time to datetime objects
+                datetime1 = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+                datetime2 = datetime.strptime(f"{dateOfEnd_location} {timeOfEnd_location}", "%Y-%m-%d %H:%M:%S")
+
+                # Process each seat number and gender from the seat_numbers list
+                for a in voyage_listing_data:
+                    dateofVoyage = datetime.strptime(f"{a[6]} {a[2]}", "%Y-%m-%d %H:%M:%S")
+                    if datetime1 <= dateofVoyage < datetime2:
+                        for seat in seat_numbers:
+                            seat_no = seat.get("seat")
+                            gender = seat.get("gender")
+                            if seat_no and gender:
+                                print(f"Koltuk No: {seat_no}, Cinsiyet: {gender}")
+                                Seats.updateSeat(plate, a[3], a[4], seat_no, "Occupied", gender)
+                for seat in seat_numbers:
+                    seat_no=seat.get("seat")
+                    company=voyage_listing_data[0][1]
+                    Tickets.createTicket(user_id,start_location,end_location,date,time,seat_no,company)
+                # Return a success response
+                return JsonResponse({"status": "success"})
 
         except ValueError as ve:
             # Return an error response if there is a missing value
@@ -349,3 +363,18 @@ def setSeats(request):
     else:
         # Return an error if the request method is not POST
         return JsonResponse({"status": "invalid request"}, status=405)
+
+@csrf_exempt
+def getTickets(request):
+    if request.method=='POST':
+        try:
+            data= json.loads(request.body)
+            origin=data.get('origin')
+            destination=data.get('destination')
+            date=data.get('date')
+            company=data.get('company')
+
+            result=Tickets.getTickets(origin,destination,date,company)
+            return JsonResponse({"status": "success","tickets":result})
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    
