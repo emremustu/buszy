@@ -34,7 +34,7 @@ const LoginPage = () => {
 
         if(result.success){
           if (rememberMe) {
-            localStorage.setItem('userMail',result.user_mail)
+            localStorage.setItem('userMail',result.user_mail);
             // Store the user's info (e.g., user_id or token) permanently in localStorage
             localStorage.setItem('rememberMe','true');
             localStorage.setItem('userLoggedIn', 'true');
@@ -44,7 +44,7 @@ const LoginPage = () => {
             localStorage.setItem('rememberMe','false');
             sessionStorage.setItem('userLoggedIn', 'true');
             sessionStorage.setItem('userId', result.user_id); // Assuming result contains user_id
-            sessionStorage.setItem('userMail',result.user_mail)
+            sessionStorage.setItem('userMail',result.user_mail);
           }
           router.push('/');
           
