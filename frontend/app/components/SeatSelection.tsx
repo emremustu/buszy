@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface SeatSelectionProps {
@@ -10,11 +10,45 @@ interface SeatSelectionProps {
 const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
     const [seatGenderMap, setSeatGenderMap] = useState<{ [key: number]: 'male' | 'female' }>({});
     const [pendingSeat, setPendingSeat] = useState<number | null>(null);
+    const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]);
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchOccupiedSeats = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/get-seats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        plate: voyage[7],
+                        start_location: voyageData.origin,
+                        end_location: voyageData.destination,
+                    }),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    const occupied = result.seats
+                        .filter((seat: any) => seat[4] === 'Occupied') // seat_status
+                        .map((seat: any) => seat[3]); // seat number
+                    setOccupiedSeats(occupied);
+                } else {
+                    console.log("Failed to fetch seat data");
+                }
+            } catch (error) {
+                console.error("Error fetching seat data:", error);
+            }
+        };
+
+        if (voyageData.origin && voyageData.destination && voyage[7]) {
+            fetchOccupiedSeats();
+        }
+    }, [voyageData.origin, voyageData.destination, voyage]);
 
     const handleSeatClick = (seat: number) => {
         if (pendingSeat !== null) return;
-
         if (seatGenderMap[seat]) {
             setSeatGenderMap((prev) => {
                 const updated = { ...prev };
@@ -42,8 +76,7 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
             gender,
         }));
 
-        router.push(`/ticket?seats=${encodeURIComponent(JSON.stringify(selectedSeats))}&origin=${voyageData.origin}&destination=${voyageData.destination}&date=${voyageData.date}&time=${voyage[2]}&price=${voyage[5]
-            }&plate=${voyage[7]}&list_id=${voyage[0]}`);
+        router.push(`/ticket?seats=${encodeURIComponent(JSON.stringify(selectedSeats))}&origin=${voyageData.origin}&destination=${voyageData.destination}&date=${voyageData.date}&time=${voyage[2]}&price=${voyage[5]}&plate=${voyage[7]}&list_id=${voyage[0]}`);
     };
 
     const layout = [
@@ -59,17 +92,23 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
             return <div className="w-12 h-12 bg-gray-700 flex items-center justify-center text-white rounded-full text-lg">🚍</div>;
         }
 
+        const seatNumber = Number(seat);
+        const isOccupied = occupiedSeats.includes(seatNumber);
+
         const colorClass =
-            seatGenderMap[seat as number] === 'male'
-                ? 'bg-blue-400'
-                : seatGenderMap[seat as number] === 'female'
-                    ? 'bg-pink-400'
-                    : 'bg-gray-200';
+            isOccupied
+                ? 'bg-red-400 cursor-not-allowed'
+                : seatGenderMap[seatNumber] === 'male'
+                    ? 'bg-blue-400'
+                    : seatGenderMap[seatNumber] === 'female'
+                        ? 'bg-pink-400'
+                        : 'bg-gray-200';
 
         return (
             <button
-                onClick={() => handleSeatClick(Number(seat))}
+                onClick={() => !isOccupied && handleSeatClick(seatNumber)}
                 className={`w-12 h-12 rounded-md border flex items-center justify-center text-xs font-bold ${colorClass}`}
+                disabled={isOccupied}
             >
                 {seat}
             </button>
@@ -122,23 +161,3 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
 };
 
 export default SeatSelection;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
