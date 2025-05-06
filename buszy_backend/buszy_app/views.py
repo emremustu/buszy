@@ -379,3 +379,14 @@ def getTickets(request):
             return JsonResponse({"status": "success","tickets":result})
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    
+        
+
+@csrf_exempt
+def getTicketsByUserId(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            userId= data.get('userId')
+            
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    
