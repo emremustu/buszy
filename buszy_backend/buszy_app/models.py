@@ -48,6 +48,10 @@ class User(models.Model):
                 return user.check_password(raw_password)
             else:
                 return False
+            
+
+
+    
 
 
 
@@ -324,4 +328,17 @@ class Comments(models.Model):
     ticket_id = models.IntegerField()
 
 
-    
+    @staticmethod
+    def addComment(rate,user_id,user_comment,ticket_id):
+        query="""
+        INSERT INTO comments (rate, user_id, user_comment, ticket_id) VALUES (%s,%s,%s,%s)
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                rate,
+                user_id,
+                user_comment,
+                ticket_id
+            ])
+        

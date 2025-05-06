@@ -48,11 +48,17 @@ const SignupPage = () => {
           localStorage.setItem('rememberMe', 'true');
           localStorage.setItem('userLoggedIn', 'true');
           localStorage.setItem('userId', result.user_id); // Assuming result contains user_id
+          if(selectedOption=='companies'){
+            localStorage.setItem('company',companyName);
+          }
         } else {
           // Store the user's info for the session in sessionStorage
           sessionStorage.setItem('rememberMe', 'false');
           sessionStorage.setItem('userLoggedIn', 'true');
           sessionStorage.setItem('userId', result.user_id); // Assuming result contains user_id
+          if(selectedOption=='companies'){
+            sessionStorage.setItem('company',companyName);
+          }
         }
         router.push('/');
       } else {
