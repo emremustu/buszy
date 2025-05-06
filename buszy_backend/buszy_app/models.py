@@ -62,6 +62,9 @@ class Voyage(models.Model):
     crew = models.CharField(max_length=100)
     cities = models.JSONField()  # JSON veri tipi ile şehirleri saklamak için
 
+    class Meta:
+        db_table = 'voyages'  # Veritabanındaki tablo adı
+        managed=False
 
     @staticmethod
     def create_voyage(bus_company, bus_plate, crew, cities):
@@ -159,6 +162,7 @@ class VoyageListing(models.Model):
 
     class Meta:
         db_table = 'voyage_listing'  # Veritabanındaki tablo adı
+        managed=False
 
 
 
@@ -210,6 +214,9 @@ class Seats(models.Model):
     seat_status= models.CharField(max_length=50)
     gender=models.CharField(max_length=10)
 
+    class Meta:
+        db_table = 'seats'  # Veritabanındaki tablo adı
+        managed=False
 
     @staticmethod
     def getSeats(bus_plate,start_location,end_location):
@@ -279,7 +286,8 @@ class Tickets(models.Model):
     list_id = models.ForeignKey(VoyageListing,on_delete=models.CASCADE,related_name='voyage_listing')
 
     class Meta:
-        db_table = 'tickets' 
+        db_table = 'tickets'
+        managed=False 
 
     @staticmethod
     def createTicket(user_id,origin,destination,voyage_date,voyage_time,seat,company):
@@ -326,6 +334,10 @@ class Comments(models.Model):
     user_id=models.IntegerField()
     user_comment=models.CharField(max_length=255)
     ticket_id = models.IntegerField()
+
+    class Meta:
+        db_table = 'comments'  # Veritabanındaki tablo adı
+        managed=False
 
 
     @staticmethod
