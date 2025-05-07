@@ -70,10 +70,11 @@ const TripsPage = () => {
           voyages.map((voyage, index) => (
             <div key={index} className="mb-10">
               <section className="bus-card bg-white flex items-center justify-between p-6 rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-300">
-                <Image src="/images/kamilkoc.png" alt="Bus Company Logo" width={100} height={50} />
+                <Image src="/assets/images/kamilkoc.png" alt="Bus Company Logo" width={100} height={50} />
                 <div className="bus-info flex-1 ml-8">
                   <div className="seat-info flex items-center justify-center gap-2 mb-1">
-                    <Image src="/images/seat-icon.png" alt="Seat Icon" width={50} height={50} />
+                    <Image src="/assets/images/seat-icon.png" alt="Seat Icon" width={50} height={50} />
+
                     <span className="text-lg">2+1</span>
                   </div>
 
