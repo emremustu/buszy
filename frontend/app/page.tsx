@@ -82,6 +82,18 @@ const MainPage = () => {
   };
 
   useEffect(() => {
+
+      const accountType = localStorage.getItem('account_type') ?? sessionStorage.getItem('account_type');
+
+      if(accountType=='companies'){
+        router.push('/administrations');
+      }
+      
+
+    
+
+
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         fromDropdownRef.current &&

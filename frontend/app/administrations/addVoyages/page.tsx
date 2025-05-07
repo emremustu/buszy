@@ -32,6 +32,10 @@ const VoyageForm = () => {
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
+
+        const companyName= localStorage.getItem('name') ?? sessionStorage.getItem('name');
+
+
         e.preventDefault();
         try {
             const response = await fetch("http://localhost:8000/api/add-voyage", {
@@ -40,7 +44,7 @@ const VoyageForm = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    bus_company: "kamilKoç",
+                    bus_company: companyName,
                     bus_plate,
                     seats_emp: [
                         { "seat_number": "1", "status": "Occupied" }

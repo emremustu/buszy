@@ -95,7 +95,7 @@ def login_view(request):
                 from django.contrib.auth import login as auth_login
                 auth_login(request, user)
                 print(user.id)
-                return JsonResponse({"success": True, "message": "Giriş başarılı!","user_id": user.id, "user_mail":user.email,"user_name": user.name})
+                return JsonResponse({"success": True, "message": "Giriş başarılı!","user_id": user.id, "user_mail":user.email,"user_name": user.name,"account_type":user.account_type})
             except User.DoesNotExist:
                 return JsonResponse({"success": False, "message": "Kullanıcı bulunamadı!"})
         else:
