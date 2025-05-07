@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from django.http import JsonResponse
-from .models import Seats, Tickets, User, Voyage, VoyageListing
+from .models import Comments, Seats, Tickets, User, Voyage, VoyageListing
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
@@ -390,6 +390,25 @@ def getTicketsByUserId(request):
             
             result = Tickets.getTicketsById(userId)
             return JsonResponse({"status": "success","tickets":result})
+
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    
+
+@csrf_exempt
+def addComment(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            user_id= data.get('user_id')
+            rate= data.get('rate')
+            user_comment=data.get('comment')
+            ticket_id=data.get('ticket_id')
+
+            result=Comments.addComment(rate,user_id,user_comment,ticket_id)
+
+            
+
+            return JsonResponse({"status": "success","comment":result})
 
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    

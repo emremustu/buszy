@@ -13,6 +13,7 @@ urlpatterns = [
     path('set-seats',views.setSeats ,name='setSeats'),
     path('get-seats',views.getSeats,name='get-seats'),
     path('get-tickets',views.getTickets,name='get-tickets'),
-    path('get-tickets-by-user-id',views.getTicketsByUserId,name='get-tickets-by-user-id')
+    path('get-tickets-by-user-id',views.getTicketsByUserId,name='get-tickets-by-user-id'),
+    path('add-comment',views.addComment,name='add-comment')
 
 ]
