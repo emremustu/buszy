@@ -1,6 +1,9 @@
 'use client';
+
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Navbar from "../components/Navbar";  // Navbar'ı ekliyoruz
+import Footer from "../components/Footer"; // Footer'ı ekliyoruz
 
 const TicketPage = () => {
     const searchParams = useSearchParams();
@@ -14,24 +17,19 @@ const TicketPage = () => {
     const plate = searchParams.get('plate');
     const list_id = searchParams.get('list_id');
 
-    // State variables
     const [userId, setUserId] = useState<string | null>(null);
     const [seats, setSeats] = useState<{ seat: number; gender: string }[]>([]);
 
-    // First useEffect to fetch userId from localStorage or sessionStorage
     useEffect(() => {
         if (localStorage.getItem('rememberMe') === 'true') {
             const storedUserId = localStorage.getItem('userId');
-            console.log('User ID from localStorage:', storedUserId);  // Debugging
             setUserId(storedUserId);
         } else {
             const storedUserId = sessionStorage.getItem('userId');
-            console.log('User ID from sessionStorage:', storedUserId);  // Debugging
             setUserId(storedUserId);
         }
-    }, []);  // This effect runs only once, when the component is first mounted
+    }, []);
 
-    // Second useEffect to handle the seats param
     useEffect(() => {
         if (seatsParam) {
             try {
@@ -40,14 +38,13 @@ const TicketPage = () => {
                 console.error('Failed to parse seats:', err);
             }
         }
-    }, [seatsParam]);  // This effect runs when seatsParam changes
+    }, [seatsParam]);
 
-    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!userId) {
-            alert('User ID is not available!');  // Check if userId is available
+            alert('User ID is not available!');
             return;
         }
 
@@ -61,7 +58,7 @@ const TicketPage = () => {
             time,
             date,
         };
-        console.log(data);
+
         try {
             const response = await fetch('http://localhost:8000/api/set-seats', {
                 method: 'POST',
@@ -80,14 +77,15 @@ const TicketPage = () => {
             }
         } catch (error) {
             console.error('Error during fetch:', error);
-            alert('Bir hata oluştu, lütfen tekrar deneyin.' + error);
+            alert('Bir hata oluştu, lütfen tekrar deneyin.');
         }
     };
 
     const totalPrice = seats.length * Number(price || 0);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center py-12 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 flex flex-col items-center justify-center py-12 px-4">
+            <Navbar /> {/* Navbar'ı en üstte yerleştiriyoruz */}
             <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-10 border border-gray-200 animate-fade-in">
                 <h1 className="text-4xl font-bold text-center text-green-700 mb-6">🎫 Ticket Summary</h1>
 
@@ -136,10 +134,13 @@ const TicketPage = () => {
                     </div>
 
                     <form onSubmit={handleSubmit}>
-                        <button type="submit">ONAYLA</button>
+                        <button type="submit" className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full">
+                            ONAYLA
+                        </button>
                     </form>
                 </div>
             </div>
+            <Footer /> {/* Footer'ı ekliyoruz */}
         </div>
     );
 };
