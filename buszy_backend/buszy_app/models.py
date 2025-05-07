@@ -325,6 +325,24 @@ class Tickets(models.Model):
                 return data
             else:
                 return None
+            
+
+    @staticmethod
+    def getTicketsById(user_id):
+        query="""
+        SELECT * FROM tickets WHERE user_id = %s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                user_id
+            ])
+            data = cursor.fetchall()
+
+            if data:
+                return data
+            else:
+                return None       
 
 
 

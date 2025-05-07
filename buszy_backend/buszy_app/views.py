@@ -388,5 +388,8 @@ def getTicketsByUserId(request):
             data=json.loads(request.body)
             userId= data.get('userId')
             
+            result = Tickets.getTicketsById(userId)
+            return JsonResponse({"status": "success","tickets":result})
+
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    

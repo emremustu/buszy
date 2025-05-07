@@ -12,5 +12,7 @@ urlpatterns = [
     path('update-voyage-list',views.update_voyage_listing,name='update_voyage_listing'),
     path('set-seats',views.setSeats ,name='setSeats'),
     path('get-seats',views.getSeats,name='get-seats'),
-    path('get-tickets',views.getTickets,name='get-tickets')
+    path('get-tickets',views.getTickets,name='get-tickets'),
+    path('get-tickets-by-user-id',views.getTicketsByUserId,name='get-tickets-by-user-id')
+
 ]
