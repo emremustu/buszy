@@ -376,6 +376,8 @@ def getTickets(request):
             company=data.get('company')
 
             result=Tickets.getTickets(origin,destination,date,company)
+
+            print(result)
             return JsonResponse({"status": "success","tickets":result})
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    

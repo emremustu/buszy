@@ -3,6 +3,7 @@
 import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
 import { useState } from "react";
+import DatePicker from "react-datepicker";
 
 type CityStop = {
     city: string;
@@ -13,7 +14,7 @@ type CityStop = {
 const defaultStop: CityStop = {
     city: "Bursa",
     time: "15:30",
-    date: "2025-04-21",
+    date: "08.05.2025",
 };
 
 const VoyageForm = () => {
