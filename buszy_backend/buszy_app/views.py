@@ -401,7 +401,7 @@ def addComment(request):
             data=json.loads(request.body)
             user_id= data.get('user_id')
             rate= data.get('rate')
-            user_comment=data.get('comment')
+            user_comment=data.get('user_comment')
             ticket_id=data.get('ticket_id')
 
             result=Comments.addComment(rate,user_id,user_comment,ticket_id)
@@ -412,3 +412,40 @@ def addComment(request):
 
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    
+
+
+
+@csrf_exempt
+def seeComment(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            ticket_id = data.get('ticket_id')
+
+            result = Comments.seeComment(ticket_id)
+
+            return JsonResponse({"status": "success","comment":result})
+
+
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})   
+
+
+
+
+@csrf_exempt
+def seeComments(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            company = data.get('company')
+
+            result = Comments.seeComments(company)
+
+            return JsonResponse({"status": "success","comment":result})
+
+
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})          
+
+        
