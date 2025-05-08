@@ -73,7 +73,6 @@ const VoyageForm = () => {
                 >
                     <h2 className="text-2xl font-bold text-center">Create New Voyage</h2>
 
-                    {/* bus_Plate & Crew Inputs */}
                     <div className="flex flex-row space-x-6">
                         <div className="flex-1">
                             <label className="block text-sm font-medium mb-1">bus_Plate</label>
@@ -95,7 +94,7 @@ const VoyageForm = () => {
                         </div>
                     </div>
 
-                    {/* Stops Inputs */}
+                    
                     <div className="space-y-4">
                         {stops.map((stop, index) => (
                             <div
@@ -139,7 +138,7 @@ const VoyageForm = () => {
                         ))}
                     </div>
 
-                    {/* Buttons */}
+                   
                     <div className="flex justify-between items-center">
                         <button
                             type="button"
