@@ -48,7 +48,8 @@ class User(models.Model):
                 return user.check_password(raw_password)
             else:
                 return False
-            
+    
+    
 
 
     
@@ -372,3 +373,37 @@ class Comments(models.Model):
                 ticket_id
             ])
         
+    @staticmethod
+    def seeComment(ticket_id):
+        query="""
+        SELECT * FROM comments WHERE ticket_id = %s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                ticket_id
+            ])
+            data=cursor.fetchall()
+
+            if data:
+                return data
+            else:
+                return None
+            
+
+    @staticmethod
+    def seeComments(company) :
+        query="""
+        SELECT * FROM comments JOIN tickets USING (ticket_id) WHERE company=%s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                company
+            ])
+            data=cursor.fetchall()
+
+            if data:
+                return data
+            else:
+                return None      

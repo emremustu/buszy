@@ -21,6 +21,31 @@ const Navbar = () => {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('userLoggedIn');
+    sessionStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('rememberMe');
+    sessionStorage.removeItem('name');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userMail');
+    sessionStorage.removeItem('account_type');
+
+    localStorage.removeItem('name');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userMail');
+    localStorage.removeItem('account_type');
+
+
+
+
+    setIsLoggedIn(false); // Uygulama içi durum güncelle
+    setDropdownOpen(false); // Dropdown'u kapat
+
+    // İsteğe bağlı yönlendirme (Next.js router kullanımı)
+    window.location.href = '/login';
+  };
+
+
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen); // Dropdown menüsünü açıp kapatır
   }
@@ -54,7 +79,7 @@ const Navbar = () => {
               className='h-12 w-12 rounded-full cursor-pointer'
               onClick={toggleDropdown} // Avatar tıklandığında dropdown menüsünü açar
             />
-            
+
             {/* Dropdown menüsü */}
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-48">
@@ -68,17 +93,20 @@ const Navbar = () => {
                   </li>
                   <li>
                     <Link href='/my_tickets' className="flex px-4 py-2 text-gray-700 hover:bg-gray-200">
-                    <TicketIcon className="h-5 w-5 mr-2 text-gray-500"></TicketIcon>
+                      <TicketIcon className="h-5 w-5 mr-2 text-gray-500"></TicketIcon>
                       My Tickets
                     </Link>
                   </li>
                   <li>
-                    
-                    <Link href='/login' className="flex px-4 py-2 text-red-600 hover:bg-gray-200">
-                    <ArrowRightStartOnRectangleIcon  className="h-5 w-5 mr-2 text-red-600" ></ArrowRightStartOnRectangleIcon>
+                    <button
+                      onClick={handleLogout}
+                      className="flex w-full px-4 py-2 text-left text-red-600 hover:bg-gray-200 items-center"
+                    >
+                      <ArrowRightStartOnRectangleIcon className="h-5 w-5 mr-2 text-red-600" />
                       Log Out
-                    </Link>
+                    </button>
                   </li>
+                  
                 </ul>
               </div>
             )}
