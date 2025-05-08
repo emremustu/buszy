@@ -1,6 +1,9 @@
 'use client';
+
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Navbar from "../components/Navbar";  // Navbar'ı ekliyoruz
+import Footer from "../components/Footer"; // Footer'ı ekliyoruz
 
 const TicketPage = () => {
     const searchParams = useSearchParams();
@@ -14,24 +17,19 @@ const TicketPage = () => {
     const plate = searchParams.get('plate');
     const list_id = searchParams.get('list_id');
 
-    // State variables
     const [userId, setUserId] = useState<string | null>(null);
     const [seats, setSeats] = useState<{ seat: number; gender: string }[]>([]);
 
-    // First useEffect to fetch userId from localStorage or sessionStorage
     useEffect(() => {
         if (localStorage.getItem('rememberMe') === 'true') {
             const storedUserId = localStorage.getItem('userId');
-            console.log('User ID from localStorage:', storedUserId);  // Debugging
             setUserId(storedUserId);
         } else {
             const storedUserId = sessionStorage.getItem('userId');
-            console.log('User ID from sessionStorage:', storedUserId);  // Debugging
             setUserId(storedUserId);
         }
-    }, []);  // This effect runs only once, when the component is first mounted
+    }, []);
 
-    // Second useEffect to handle the seats param
     useEffect(() => {
         if (seatsParam) {
             try {
@@ -40,14 +38,13 @@ const TicketPage = () => {
                 console.error('Failed to parse seats:', err);
             }
         }
-    }, [seatsParam]);  // This effect runs when seatsParam changes
+    }, [seatsParam]);
 
-    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!userId) {
-            alert('User ID is not available!');  // Check if userId is available
+            alert('User ID is not available!');
             return;
         }
 
@@ -61,7 +58,7 @@ const TicketPage = () => {
             time,
             date,
         };
-        console.log(data);
+
         try {
             const response = await fetch('http://localhost:8000/api/set-seats', {
                 method: 'POST',
@@ -80,66 +77,72 @@ const TicketPage = () => {
             }
         } catch (error) {
             console.error('Error during fetch:', error);
-            alert('Bir hata oluştu, lütfen tekrar deneyin.' + error);
+            alert('Bir hata oluştu, lütfen tekrar deneyin.');
         }
     };
 
     const totalPrice = seats.length * Number(price || 0);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center py-12 px-4">
-            <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-10 border border-gray-200 animate-fade-in">
-                <h1 className="text-4xl font-bold text-center text-green-700 mb-6">🎫 Ticket Summary</h1>
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-100 to-blue-100">
+            <Navbar /> {/* Navbar'ı üst kısma sabitledik */}
+            <div className="flex-grow flex items-center justify-center py-12 px-4">
+                <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-10 border border-gray-200 animate-fade-in">
+                    <h1 className="text-4xl font-bold text-center text-green-700 mb-6">🎫 Ticket Summary</h1>
 
-                <div className="space-y-4 text-lg">
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl">🚌</span>
-                        <p className="text-gray-700 font-semibold">
-                            <span className="text-green-800">{origin}</span> → <span className="text-green-800">{destination}</span>
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl">📅</span>
-                        <p className="text-gray-700 font-semibold">{date}</p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl">⏰</span>
-                        <p className="text-gray-700 font-semibold">{time}</p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl">💵</span>
-                        <div>
-                            <p className="text-green-600 text-xl font-bold">{price} ₺ / per seat</p>
-                            <p className="text-gray-700 font-semibold">Total: {totalPrice} ₺</p>
+                    <div className="space-y-4 text-lg">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">🚌</span>
+                            <p className="text-gray-700 font-semibold">
+                                <span className="text-green-800">{origin}</span> → <span className="text-green-800">{destination}</span>
+                            </p>
                         </div>
-                    </div>
 
-                    <div className="mt-6">
-                        <h2 className="text-xl font-bold text-gray-800 mb-2">Selected Seats</h2>
-                        <div className="flex flex-wrap gap-3">
-                            {seats.length > 0 ? (
-                                seats.map((s, i) => (
-                                    <span
-                                        key={i}
-                                        className={`px-4 py-2 rounded-full text-white font-semibold shadow ${s.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'}`}
-                                    >
-                                        Seat {s.seat} - {s.gender}
-                                    </span>
-                                ))
-                            ) : (
-                                <p className="text-gray-500 italic">No seats selected.</p>
-                            )}
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">📅</span>
+                            <p className="text-gray-700 font-semibold">{date}</p>
                         </div>
-                    </div>
 
-                    <form onSubmit={handleSubmit}>
-                        <button type="submit">ONAYLA</button>
-                    </form>
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">⏰</span>
+                            <p className="text-gray-700 font-semibold">{time}</p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">💵</span>
+                            <div>
+                                <p className="text-green-600 text-xl font-bold">{price} ₺ / per seat</p>
+                                <p className="text-gray-700 font-semibold">Total: {totalPrice} ₺</p>
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <h2 className="text-xl font-bold text-gray-800 mb-2">Selected Seats</h2>
+                            <div className="flex flex-wrap gap-3">
+                                {seats.length > 0 ? (
+                                    seats.map((s, i) => (
+                                        <span
+                                            key={i}
+                                            className={`px-4 py-2 rounded-full text-white font-semibold shadow ${s.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'}`}
+                                        >
+                                            Seat {s.seat} - {s.gender}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500 italic">No seats selected.</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <button type="submit" className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full">
+                                ONAYLA
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
+            <Footer /> {/* Footer'ı alt kısma sabitledik */}
         </div>
     );
 };

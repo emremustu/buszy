@@ -48,6 +48,10 @@ class User(models.Model):
                 return user.check_password(raw_password)
             else:
                 return False
+            
+
+
+    
 
 
 
@@ -58,6 +62,9 @@ class Voyage(models.Model):
     crew = models.CharField(max_length=100)
     cities = models.JSONField()  # JSON veri tipi ile şehirleri saklamak için
 
+    class Meta:
+        db_table = 'voyages'  # Veritabanındaki tablo adı
+        managed=False
 
     @staticmethod
     def create_voyage(bus_company, bus_plate, crew, cities):
@@ -155,6 +162,7 @@ class VoyageListing(models.Model):
 
     class Meta:
         db_table = 'voyage_listing'  # Veritabanındaki tablo adı
+        managed=False
 
 
 
@@ -206,6 +214,9 @@ class Seats(models.Model):
     seat_status= models.CharField(max_length=50)
     gender=models.CharField(max_length=10)
 
+    class Meta:
+        db_table = 'seats'  # Veritabanındaki tablo adı
+        managed=False
 
     @staticmethod
     def getSeats(bus_plate,start_location,end_location):
@@ -275,7 +286,8 @@ class Tickets(models.Model):
     list_id = models.ForeignKey(VoyageListing,on_delete=models.CASCADE,related_name='voyage_listing')
 
     class Meta:
-        db_table = 'tickets' 
+        db_table = 'tickets'
+        managed=False 
 
     @staticmethod
     def createTicket(user_id,origin,destination,voyage_date,voyage_time,seat,company):
@@ -313,6 +325,24 @@ class Tickets(models.Model):
                 return data
             else:
                 return None
+            
+
+    @staticmethod
+    def getTicketsById(user_id):
+        query="""
+        SELECT * FROM tickets WHERE user_id = %s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                user_id
+            ])
+            data = cursor.fetchall()
+
+            if data:
+                return data
+            else:
+                return None       
 
 
 
@@ -323,5 +353,22 @@ class Comments(models.Model):
     user_comment=models.CharField(max_length=255)
     ticket_id = models.IntegerField()
 
+    class Meta:
+        db_table = 'comments'  # Veritabanındaki tablo adı
+        managed=False
 
-    
+
+    @staticmethod
+    def addComment(rate,user_id,user_comment,ticket_id):
+        query="""
+        INSERT INTO comments (rate, user_id, user_comment, ticket_id) VALUES (%s,%s,%s,%s)
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                rate,
+                user_id,
+                user_comment,
+                ticket_id
+            ])
+        

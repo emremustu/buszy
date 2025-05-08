@@ -12,7 +12,6 @@ const ProfilePage = () => {
       const userLoggedIn = sessionStorage.getItem('userLoggedIn') === 'true' || localStorage.getItem('userLoggedIn') === 'true';
       
       if (!userLoggedIn) {
-        // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
         router.push('/login');
       }
     }

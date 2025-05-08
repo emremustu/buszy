@@ -3,60 +3,44 @@ import Footer from '../components/Footer'
 import Link from 'next/link'
 import Navbar from '../components/Navbar'
 
-const adminPage = () => {
+const AdminPage = () => {
     return (
         <>
-            <div className='flex flex-col h-screen'>
-                
-                <div className='flex flex-col items-center justify-center h-full'>
-                    {/*ekrani full olarak aliyor ve footbar-navbari o sekilde ayarliyor h-full*/}
-                    <div className="flex flex-wrap space-x-4 p-4">
-                        {/* See Voyages Button */}
-                        <div className='flex flex-col space-y-5 '>
-                            <Link href='/administrations/seeVoyages' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 w-124 flex items-center justify-center ">
-                                See Voyages
-                            </Link>
-                            <div className='flex flex-row space-x-10 space-y-4 ' >
-                                {/* Add a Voyage Button */}
-                                <Link href='/administrations/addVoyages' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
-                                    Add a Voyage
-                                </Link>
+            <div className="flex flex-col min-h-screen ">
+                <Navbar />
 
-                                {/* Change Voyage Information Button */}
-                                <Link href='/administrations/changeVoyageInformation' className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 space-x-15 items-center justify-center">
-                                    Change Voyage Information
-                                </Link>
-                                <button className='bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57'>
-                                    Customer Comments
-                                </button>
-                            </div>
-                            <div className='flex flex-row space-x-10'>
-                                {/* Manage Tickets Button */}
-                                <button className="bg-primarybr text-white py-2 px-4 rounded-3xl hover:bg-green-600 h-14 w-57 flex items-center justify-center">
-                                    Manage Tickets
-                                </button>
-                                <button className='bg-primarybr text-white  hover:bg-green-600 py-2 px-4 rounded-3xl h-14 w-57 border-4 border-red-600 flex items-center justify-center'>
-                                    Help Desk
-                                </button>
-                            </div>
-                        </div>
+                <main className="flex flex-1 items-center justify-center p-4 ">
+                    <div className="w-full max-w-4xl grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                        <Link href="/administrations/seeVoyages" className="bg-primarybr text-white py-3 px-6 rounded-3xl hover:bg-green-600 text-center">
+                            See Voyages
+                        </Link>
+
+                        <Link href="/administrations/addVoyages" className="bg-primarybr text-white py-3 px-6 rounded-3xl hover:bg-green-600 text-center">
+                            Add a Voyage
+                        </Link>
+
+                        <Link href="/administrations/changeVoyageInformation" className="bg-primarybr text-white py-3 px-6 rounded-3xl hover:bg-green-600 text-center">
+                            Change Voyage Information
+                        </Link>
+
+                        <button className="bg-primarybr text-white py-3 px-6 rounded-3xl hover:bg-green-600 text-center">
+                            Customer Comments
+                        </button>
+
+                        <button className="bg-primarybr text-white py-3 px-6 rounded-3xl hover:bg-green-600 text-center">
+                            Manage Tickets
+                        </button>
+
+                        <button className="bg-primarybr text-white py-3 px-6 rounded-3xl border-4 hover:bg-green-600 text-center">
+                            Help Desk
+                        </button>
                     </div>
-                </div>
-                <div className='mt-auto'></div>
+                </main>
 
-                <div className='flex flex-col items-center justify-end ml-auto space-y-5'>
-
-
-                </div>
-                <Footer></Footer>
+                <Footer />
             </div>
-
-
-
-
-
         </>
     )
 }
 
-export default adminPage
+export default AdminPage

@@ -67,7 +67,7 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href='/my-tickets' className="flex px-4 py-2 text-gray-700 hover:bg-gray-200">
+                    <Link href='/my_tickets' className="flex px-4 py-2 text-gray-700 hover:bg-gray-200">
                     <TicketIcon className="h-5 w-5 mr-2 text-gray-500"></TicketIcon>
                       My Tickets
                     </Link>
