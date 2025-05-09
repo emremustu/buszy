@@ -22,7 +22,7 @@ const TicketPage = () => {
     const companyName = localStorage.getItem('name') ?? sessionStorage.getItem('name');
 
     if (!companyName) {
-      setResponseMessage("Şirket bilgisi bulunamadı.");
+      setResponseMessage("Company information is not found.");
       return;
     }
 
@@ -45,9 +45,9 @@ const TicketPage = () => {
 
       if (result.status === "success" && Array.isArray(result.tickets)) {
         setTickets(result.tickets);
+       
       } else {
-        
-        
+        setResponseMessage(`No ticket found in ${companyName} turizm!`);
         setTickets([]);
       }
     } catch (error) {
