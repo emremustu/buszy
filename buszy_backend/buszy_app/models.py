@@ -2,6 +2,7 @@ import json
 from django.db import connection, models
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
+import base64
 
 class User(models.Model):
     id = models.AutoField(primary_key=True)
@@ -11,6 +12,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     last_login = models.DateTimeField(null=True, blank=True)  # last_login alanını ekleyin
     account_type = models.CharField(max_length=20)
+    image=models.BinaryField()
 
 
     def __str__(self):
@@ -48,23 +50,50 @@ class User(models.Model):
                 return user.check_password(raw_password)
             else:
                 return False
-    
-    
+
     @staticmethod
     def getUserinfoById(user_id):
-        query="""
-        SELECT * FROM buszy_app_user WHERE id=%s
+        query = """
+        SELECT id, name, last_name, email, password, last_login, account_type, image
+        FROM buszy_app_user WHERE id=%s
         """
         from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute(query, [user_id])
-            user_data = cursor.fetchone()
+            row = cursor.fetchone()
 
-            if user_data:
-                return user_data
+            if row:
+                # unpack values
+                (
+                    id,
+                    name,
+                    last_name,
+                    email,
+                    password,
+                    last_login,
+                    account_type,
+                    image
+                ) = row
+
+                # convert bytes → base64 → string
+                image_base64 = (
+                    base64.b64encode(image).decode('utf-8')
+                    if image else None
+                )
+
+                return {
+                    "id": user_id,
+                    "name": name,
+                    "last_name": last_name,
+                    "email": email,
+                    "password": password,  # frontend'e göndermen önerilmez!
+                    "last_login": last_login.isoformat(),
+                    "account_type": account_type,
+                    "image": image_base64
+                }
             else:
                 return None
-            
+
 
     @staticmethod
     def deleteAccount(user_id):
@@ -166,18 +195,27 @@ class VoyageListing(models.Model):
 
 
     @staticmethod
-    def addVoyageListing(bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,voyage_date,bus_plate):
-        query= """
-            INSERT INTO voyage_listing (bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price,voyage_date,bus_plate) VALUES (%s,%s,%s,%s,%s,%s,%s)
-        """        
-        from django.db import connection
-        with connection.cursor() as cursor:
-            cursor.execute(query,[bus_company,bus_time,bus_list_begin,bus_list_end,bus_list_price,voyage_date,bus_plate])
-            voyage_data = cursor.fetchone()
+    def addVoyageListing(bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price, voyage_date, bus_plate, image_base64):
+        try:
+            # base64 → bytes dönüşümü (eğer varsa)
+            image_blob = base64.b64decode(image_base64) if image_base64 else None
 
-        if voyage_data:
-            return voyage_data
-        else:
+            query = """
+                INSERT INTO voyage_listing 
+                (bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price, voyage_date, bus_plate, image) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            from django.db import connection
+            with connection.cursor() as cursor:
+                cursor.execute(query, [
+                    bus_company, bus_time, bus_list_begin, bus_list_end,
+                    bus_list_price, voyage_date, bus_plate, image_blob
+                ])
+                # fetchone burada gereksiz, çünkü INSERT işleminden veri dönmez
+            return True
+
+        except Exception as e:
+            print(f"Error in addVoyageListing: {e}")
             return None 
 
 

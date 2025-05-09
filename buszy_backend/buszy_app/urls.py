@@ -18,7 +18,7 @@ urlpatterns = [
     path('see-comment',views.seeComment,name='see-comment'),
     path('get-comments',views.seeComments,name='get-comments'),
     path('get-user-data',views.getUserData,name='get-user-data'),
-    path('delete-account',views.deleteAccount,name='delete-account')
-
+    path('delete-account',views.deleteAccount,name='delete-account'),
+    path('add-or-update-image',views.addOrUptadeImage,name='add-or-update-image')
 
 ]

@@ -147,7 +147,7 @@ const MyTicketsPage = () => {
     };
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col h-screen">
             <Navbar />
             <div className="flex flex-col items-center">
                 <h1 className="text-3xl font-bold mb-5 mt-12">My Tickets</h1>
@@ -238,6 +238,7 @@ const MyTicketsPage = () => {
                     })}
                 </ul>
             </div>
+            <div className='mt-auto'></div>
             <Footer></Footer>
         </div>
     );
