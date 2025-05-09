@@ -10,7 +10,7 @@ interface SeatSelectionProps {
 const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
     const [seatGenderMap, setSeatGenderMap] = useState<{ [key: number]: 'male' | 'female' }>({});
     const [pendingSeat, setPendingSeat] = useState<number | null>(null);
-    const [occupiedSeats, setOccupiedSeats] = useState<number[]>([]);
+    const [occupiedSeats, setOccupiedSeats] = useState<{ [key: number]: string }>({}); // Now tracking both seat number and gender
     const router = useRouter();
 
     useEffect(() => {
@@ -30,9 +30,12 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
 
                 const result = await response.json();
                 if (result.success) {
-                    const occupied = result.seats
+                    const occupied: { [key: number]: string } = {};
+                    result.seats
                         .filter((seat: any) => seat[4] === 'Occupied') // seat_status
-                        .map((seat: any) => seat[3]); // seat number
+                        .forEach((seat: any) => {
+                            occupied[seat[3]] = seat[5]; // Store gender for occupied seat
+                        });
                     setOccupiedSeats(occupied);
                 } else {
                     console.log("Failed to fetch seat data");
@@ -93,11 +96,14 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
         }
 
         const seatNumber = Number(seat);
-        const isOccupied = occupiedSeats.includes(seatNumber);
+        const isOccupied = occupiedSeats.hasOwnProperty(seatNumber);
+        const gender = isOccupied ? occupiedSeats[seatNumber] : null;
 
         const colorClass =
             isOccupied
-                ? 'bg-red-400 cursor-not-allowed'
+                ? gender === 'male'
+                    ? 'bg-blue-400'  // Male occupied seat
+                    : 'bg-pink-400'  // Female occupied seat
                 : seatGenderMap[seatNumber] === 'male'
                     ? 'bg-blue-400'
                     : seatGenderMap[seatNumber] === 'female'
