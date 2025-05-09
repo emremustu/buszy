@@ -220,24 +220,32 @@ class VoyageListing(models.Model):
 
 
     @staticmethod
-    def getVoyageList(date,origin,destination):
-        query="""
+    def getVoyageList(date, origin, destination):
+        query = """
         SELECT * FROM voyage_listing WHERE voyage_date=%s AND bus_list_begin=%s AND bus_list_end=%s;
         """
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query,[date,origin,destination])
+            cursor.execute(query, [date, origin, destination])
+            columns = [col[0] for col in cursor.description]
             voyage_data = cursor.fetchall()
 
         if voyage_data:
-            return voyage_data
+            result = []
+            for row in voyage_data:
+                row_dict = dict(zip(columns, row))
+
+                # image alanını base64'e çevir
+                if row_dict.get("image"):
+                    row_dict["image"] = base64.b64encode(row_dict["image"]).decode("utf-8")
+                else:
+                    row_dict["image"] = None
+
+                result.append(row_dict)
+
+            return result
         else:
-            return None 
-
-    class Meta:
-        db_table = 'voyage_listing'  # Veritabanındaki tablo adı
-        managed=False
-
+            return None
 
 
 
