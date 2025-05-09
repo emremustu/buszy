@@ -345,7 +345,7 @@ class Tickets(models.Model):
                 company
             ])
             data = cursor.fetchall()
-
+            print(data)
             if data:
                 return data
             else:

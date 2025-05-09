@@ -27,9 +27,9 @@ const AdminPage = () => {
                             Customer Comments
                         </button>
 
-                        <button className="bg-primarybr text-white py-3 px-6 rounded-3xl hover:bg-green-600 text-center">
+                        <Link href= "/administrations/manageTickets" className="bg-primarybr text-white py-3 px-6 rounded-3xl hover:bg-green-600 text-center">
                             Manage Tickets
-                        </button>
+                        </Link>
 
                         <button className="bg-primarybr text-white py-3 px-6 rounded-3xl border-4 hover:bg-green-600 text-center">
                             Help Desk
