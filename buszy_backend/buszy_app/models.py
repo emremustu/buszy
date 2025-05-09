@@ -389,6 +389,18 @@ class Tickets(models.Model):
             ])
 
     @staticmethod
+    def deleteTicket(ticket_id):
+        query="""
+        DELETE * FROM tickets WHERE ticket_id=%s;
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[
+                ticket_id
+            ])
+
+
+    @staticmethod
     def getTickets(origin,destination,date,company):
         query="""
         SELECT * FROM tickets WHERE origin=%s AND destination=%s AND voyage_date = %s AND company =%s
@@ -473,19 +485,34 @@ class Comments(models.Model):
             
 
     @staticmethod
-    def seeComments(company) :
-        query="""
-        SELECT * FROM comments JOIN tickets USING (ticket_id) WHERE company=%s
+    def seeComments(company):
+        query = """
+        SELECT 
+            ticket_id, 
+            comment_id,
+            rate,
+            user_id, 
+            user_comment, 
+            origin, 
+            destination, 
+            voyage_date, 
+            voyage_time, 
+            seat, 
+            company
+        FROM comments 
+        JOIN tickets USING (ticket_id)
+        WHERE company = %s
         """
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query,[
-                company
-            ])
-            data=cursor.fetchall()
+            cursor.execute(query, [company])
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
 
-            if data:
-                return data
-            else:
-                return None      
+        if rows:
+            result = [dict(zip(columns, row)) for row in rows]
+            return result
+        else:
+            return None
+          
             

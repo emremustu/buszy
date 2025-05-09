@@ -170,6 +170,18 @@ def get_voyage_listing(request):
         except Exception as e:
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
 
+@csrf_exempt
+def deleteTicket(request):
+    if request.method=='POST':
+        data=json.loads(request.body)
+        ticket_id=data.get('ticket_id')
+
+        try:
+            Tickets.deleteTicket(ticket_id)
+
+            return JsonResponse({"success":True,"message":"Successfully Deleted"})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
 
 @csrf_exempt
 def get_voyage_listing_byPlate(request):
