@@ -61,7 +61,7 @@ const TicketPage = () => {
     <div className="flex flex-col h-screen">
       <Navbar />
 
-      <form onSubmit={handleSearch} className="mt-10 mx-4 space-x-20 flex justify-between">
+      <form onSubmit={handleSearch} className="mt-10 mx-4 space-x-20 flex justify-between ">
         <div className="w-1/3">
           <label className="block text-lg">From</label>
           <input
@@ -118,7 +118,7 @@ const TicketPage = () => {
       {tickets.length > 0 && (
         <div className='ml-10 flex flex-row space-x-8'>
           {tickets.map((ticket: any, index: number) => (
-            <div key={index} className="mb-4 p-4 w-fit border rounded bg-emerald-50 shadow-sm">
+            <div key={index}  className="mb-4 p-4 w-fit border rounded bg-emerald-50 shadow-sm transform transition duration-300 hover:scale-105 hover:shadow-lg">
               <div className='flex flex-row space-x-3'>
                 <p className="flex items-center gap-2">
                   <ClockIcon className="w-4 h-4 text-gray-500" />

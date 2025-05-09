@@ -40,13 +40,13 @@ const CompanyCommentsPage = () => {
                 <h1 className="text-2xl font-bold mb-6">Customer Comments</h1>
 
                 {comments.length === 0 ? (
-                    <p className="text-gray-500">Henüz yorum yapılmamış.</p>
+                    <p className="text-gray-500">There is no comments yet.</p>
                 ) : (
                     <ul className="w-full max-w-4xl space-y-4 px-4 mb-10">
                         {comments.map((comment, index) => (
                             <li
                                 key={index}
-                                className="bg-white border rounded-lg shadow-md p-4"
+                                className="bg-white border rounded-lg shadow-md p-4 transform transition duration-300 hover:scale-105 hover:shadow-lg"
                             >
                                 <div className="flex justify-between items-center mb-2">
                                     <p className="font-semibold">User ID: {comment.user_id}</p>
@@ -54,14 +54,14 @@ const CompanyCommentsPage = () => {
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span
                                                 key={star}
-                                                className={`text-xl ${comment.rate >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                                                className={`text-xl ${comment.rate >= star ? 'text-yellow-500' : 'text-gray-400'}`}
                                             >
                                                 ★
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                                <p className="italic text-gray-700 mb-2">"{comment.user_comment}"</p>
+                                <p className="italic text-gray-800 mb-2">"{comment.user_comment}"</p>
 
                                 <div className="text-sm text-gray-600 space-y-1">                                 
                                     <p><strong>Origin:</strong> {comment.origin} | <strong>Destination:</strong> {comment.destination}</p>
