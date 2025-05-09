@@ -35,6 +35,10 @@ def get_distance_km(origin, destination, api_key):
     except Exception as e:
         raise Exception(f"Failed to get distance: {str(e)}")
 
+
+
+
+
 @csrf_exempt
 def register(request):
     if request.method == 'POST':
@@ -448,4 +452,34 @@ def seeComments(request):
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})          
 
+
+@csrf_exempt
+def getUserData(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            user_id = data.get('user_id')
+
+            result = User.getUserinfoById(user_id)
+
+            return JsonResponse({"status": "success","user_info":result})
+
+
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})
         
+
+
+@csrf_exempt
+def deleteAccount(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            user_id = data.get('user_id')
+
+            result = User.deleteAccount(user_id)
+
+            return JsonResponse({"success":True})
+
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})        

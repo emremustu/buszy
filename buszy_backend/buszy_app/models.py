@@ -50,8 +50,32 @@ class User(models.Model):
                 return False
     
     
+    @staticmethod
+    def getUserinfoById(user_id):
+        query="""
+        SELECT * FROM buszy_app_user WHERE id=%s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query, [user_id])
+            user_data = cursor.fetchone()
 
+            if user_data:
+                return user_data
+            else:
+                return None
+            
 
+    @staticmethod
+    def deleteAccount(user_id):
+        query="""
+        DELETE FROM comments WHERE user_id = %s;
+        DELETE FROM tickets WHERE user_id = %s;
+        DELETE FROM buszy_app_user WHERE id=%s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query, [user_id,user_id,user_id])          
     
 
 
