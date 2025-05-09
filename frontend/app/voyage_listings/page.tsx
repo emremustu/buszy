@@ -70,22 +70,38 @@ const TripsPage = () => {
           voyages.map((voyage, index) => (
             <div key={index} className="mb-10">
               <section className="bus-card bg-white flex items-center justify-between p-6 rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-300">
-                <Image src="/assets/images/kamilkoc.png" alt="Bus Company Logo" width={100} height={50} />
+
+                {/* Otobüs logosu */}
+                <div className="bus-logo w-20 h-12">
+                  {voyage.image && voyage.image !== "null" ? (
+                    <img
+                      src={`data:image/png;base64,${voyage.image}`}
+                      alt={voyage.bus_company}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <img
+                      src="/assets/images/default_bus_logo.png"
+                      alt="Default Bus Logo"
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+
                 <div className="bus-info flex-1 ml-8">
                   <div className="seat-info flex items-center justify-center gap-2 mb-1">
                     <Image src="/assets/images/seat-icon.png" alt="Seat Icon" width={50} height={50} />
-
                     <span className="text-lg">2+1</span>
                   </div>
 
                   <div className="time-price flex justify-between items-center gap-8">
                     <div className="time-block">
-                      <h2 className="text-3xl text-gray-800">{voyage[2]}</h2>
+                      <h2 className="text-3xl text-gray-800">{voyage.bus_time}</h2>
                     </div>
                   </div>
 
                   <p className="route text-xl font-semibold text-green-900 text-center mt-3 tracking-wide capitalize">
-                    {voyage[3]} - {voyage[4]}
+                    {voyage.bus_list_begin} - {voyage.bus_list_end}
                   </p>
                 </div>
 
@@ -97,7 +113,7 @@ const TripsPage = () => {
                     Take a Seat
                   </button>
                   <div className="price text-3xl font-bold text-green-500">
-                    <strong>{voyage[5]} ₺</strong>
+                    <strong>{voyage.bus_list_price} ₺</strong>
                   </div>
                 </div>
               </section>
@@ -107,7 +123,6 @@ const TripsPage = () => {
                   <SeatSelection voyage={voyage} voyageData={voyageData} />
                 </div>
               )}
-
             </div>
           ))
         ) : (
@@ -121,32 +136,3 @@ const TripsPage = () => {
 };
 
 export default TripsPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

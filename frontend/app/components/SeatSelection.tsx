@@ -10,7 +10,7 @@ interface SeatSelectionProps {
 const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
     const [seatGenderMap, setSeatGenderMap] = useState<{ [key: number]: 'male' | 'female' }>({});
     const [pendingSeat, setPendingSeat] = useState<number | null>(null);
-    const [occupiedSeats, setOccupiedSeats] = useState<{ [key: number]: string }>({}); // Now tracking both seat number and gender
+    const [occupiedSeats, setOccupiedSeats] = useState<{ [key: number]: string }>({});
     const router = useRouter();
 
     useEffect(() => {
@@ -22,7 +22,7 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        plate: voyage[7],
+                        plate: voyage.bus_plate,
                         start_location: voyageData.origin,
                         end_location: voyageData.destination,
                     }),
@@ -32,9 +32,9 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
                 if (result.success) {
                     const occupied: { [key: number]: string } = {};
                     result.seats
-                        .filter((seat: any) => seat[4] === 'Occupied') // seat_status
+                        .filter((seat: any) => seat[4] === 'Occupied')
                         .forEach((seat: any) => {
-                            occupied[seat[3]] = seat[5]; // Store gender for occupied seat
+                            occupied[seat[3]] = seat[5];
                         });
                     setOccupiedSeats(occupied);
                 } else {
@@ -45,7 +45,7 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
             }
         };
 
-        if (voyageData.origin && voyageData.destination && voyage[7]) {
+        if (voyageData.origin && voyageData.destination && voyage.bus_plate) {
             fetchOccupiedSeats();
         }
     }, [voyageData.origin, voyageData.destination, voyage]);
@@ -79,7 +79,7 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
             gender,
         }));
 
-        router.push(`/ticket?seats=${encodeURIComponent(JSON.stringify(selectedSeats))}&origin=${voyageData.origin}&destination=${voyageData.destination}&date=${voyageData.date}&time=${voyage[2]}&price=${voyage[5]}&plate=${voyage[7]}&list_id=${voyage[0]}`);
+        router.push(`/ticket?seats=${encodeURIComponent(JSON.stringify(selectedSeats))}&origin=${voyageData.origin}&destination=${voyageData.destination}&date=${voyageData.date}&time=${voyage.bus_time}&price=${voyage.bus_list_price}&plate=${voyage.bus_plate}&list_id=${voyage.list_id}`);
     };
 
     const layout = [
@@ -102,8 +102,8 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
         const colorClass =
             isOccupied
                 ? gender === 'male'
-                    ? 'bg-blue-400'  // Male occupied seat
-                    : 'bg-pink-400'  // Female occupied seat
+                    ? 'bg-blue-400'
+                    : 'bg-pink-400'
                 : seatGenderMap[seatNumber] === 'male'
                     ? 'bg-blue-400'
                     : seatGenderMap[seatNumber] === 'female'
