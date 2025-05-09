@@ -1,6 +1,7 @@
 'use client';
 import Footer from '@/app/components/Footer'
 import Navbar from '@/app/components/Navbar'
+import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react'
 
 const reportPage = () => {
@@ -124,7 +125,12 @@ const reportPage = () => {
             <div className='flex flex-col h-screen '>
                 <Navbar />
                 <div className='flex flex-col items-center mt-5'>
-                    <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+                    <div className="w-full space-y-4 max-w-md p-6 bg-white rounded-lg shadow-lg">
+                        <p className="flex items-center gap-2">
+                            <p>Change Voyage Information</p>
+                            <ArrowsRightLeftIcon className="w-4 h-4 text-black"></ArrowsRightLeftIcon>
+                            
+                        </p>
                         <form onSubmit={handleSubmit}>
                             <input
                                 type="text"
