@@ -35,6 +35,7 @@ const VoyageForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
 
         const companyName= localStorage.getItem('name') ?? sessionStorage.getItem('name');
+        const image=localStorage.getItem('profile_picture')??sessionStorage.getItem('profile_picture');
 
 
         e.preventDefault();
@@ -56,6 +57,7 @@ const VoyageForm = () => {
 
                     crew,
                     cities: stops,
+                    image
                 }),
             });
 

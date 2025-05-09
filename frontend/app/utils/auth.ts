@@ -6,11 +6,14 @@ export const handleLogout = () => {
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('userMail');
     sessionStorage.removeItem('account_type');
+    sessionStorage.removeItem('profile_picture')
+
 
     localStorage.removeItem('name');
     localStorage.removeItem('userId');
     localStorage.removeItem('userMail');
     localStorage.removeItem('account_type');
+    localStorage.removeItem('profile_picture')
 
 
 

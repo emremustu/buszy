@@ -41,6 +41,8 @@ const LoginPage = () => {
           localStorage.setItem('userId', result.user_id); // Assuming result contains user_id
           localStorage.setItem('name',result.user_name);
           localStorage.setItem('account_type',result.account_type);
+          localStorage.setItem('profile_picture',result.image);
+
         } else {
           // Store the user's info for the session in sessionStorage
           localStorage.setItem('rememberMe', 'false');
@@ -49,7 +51,7 @@ const LoginPage = () => {
           sessionStorage.setItem('userMail', result.user_mail);
           sessionStorage.setItem('name',result.user_name);
           sessionStorage.setItem('account_type',result.account_type);
-
+          sessionStorage.setItem('profile_picture',result.image);
         }
         router.push('/');
 

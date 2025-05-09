@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime
 from decimal import Decimal
 from django.contrib.auth import authenticate, login
@@ -93,13 +94,23 @@ def login_view(request):
         if User.custom_check_user_password(email, password):
             try:
                 user = User.objects.get(email=email)
-                # Giriş yaptıktan sonra last_login'ı güncelle
                 user.last_login = timezone.now()
-                user.save()  # Veritabanında güncelleme yapıyoruz
-                from django.contrib.auth import login as auth_login
-                auth_login(request, user)
-                print(user.id)
-                return JsonResponse({"success": True, "message": "Giriş başarılı!","user_id": user.id, "user_mail":user.email,"user_name": user.name,"account_type":user.account_type})
+                user.save()
+
+                # image'ı base64'e çevir    
+                encoded_image = None
+                if user.image:
+                    encoded_image = base64.b64encode(user.image).decode('utf-8')
+
+                return JsonResponse({
+                        "success": True,
+                        "message": "Giriş başarılı!",
+                        "user_id": user.id,
+                        "user_mail": user.email,
+                        "user_name": user.name,
+                        "account_type": user.account_type,
+                        "image": encoded_image  # <-- artık JSON ile uyumlu
+                        })
             except User.DoesNotExist:
                 return JsonResponse({"success": False, "message": "Kullanıcı bulunamadı!"})
         else:
@@ -220,6 +231,7 @@ def add_voyage(request):
         bus_plate = data.get('bus_plate')
         crew = data.get('crew')
         cities = data.get('cities')
+        image=data.get('image')
 
         if not bus_company or not bus_plate or not crew or not cities:
             return JsonResponse({"success": False, "message": "There are missing fields!"})
@@ -249,7 +261,7 @@ def add_voyage(request):
                         price_per_km = Decimal('1.4') 
                         price = (distance_km * price_per_km).quantize(Decimal('0.01'))
 
-                        VoyageListing.addVoyageListing(bus_company,city_i['time'],city_i['city'],city_j['city'],price,city_i['date'], bus_plate)
+                        VoyageListing.addVoyageListing(bus_company,city_i['time'],city_i['city'],city_j['city'],price,city_i['date'], bus_plate,image)
                         for i in range(1,42):
                             Seats.createSeat(bus_plate,city_i['city'],city_j['city'],i)
 
@@ -489,12 +501,19 @@ def deleteAccount(request):
 
 @csrf_exempt
 def addOrUptadeImage(request):
-    if request.method=='POST':
+    if request.method == 'POST':
         try:
-            data=json.loads(request.body)
-            user_id=data.get('user_id')
-            image_blob=data.get('image_blob')
+            user_id = request.POST.get('user_id')
+            image_file = request.FILES.get('image')
 
-            User.addProfilePicture(user_id,image_blob)
+            if not user_id or not image_file:
+                return JsonResponse({"success": False, "message": "Missing user_id or image"})
+
+            # read binary data
+            image_blob = image_file.read()
+
+            User.addProfilePicture(user_id, image_blob)
+            return JsonResponse({"success": True, "message": "Image updated"})
+
         except Exception as e:
-            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})          
+            return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
