@@ -16,6 +16,8 @@ urlpatterns = [
     path('get-tickets-by-user-id',views.getTicketsByUserId,name='get-tickets-by-user-id'),
     path('add-comment',views.addComment,name='add-comment'),
     path('see-comment',views.seeComment,name='see-comment'),
+    path('get-comments',views.seeComments,name='get-comments'),
+
     path('get-user-data',views.getUserData,name='get-user-data'),
     path('delete-account',views.deleteAccount,name='delete-account')
 

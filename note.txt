@@ -3,15 +3,12 @@ arkadaşlar son commitimden sonra back end kısmını çalıştırmadan önce
 virtual enviroment aktif ettikten sonra "pip install requests" komutunu çalıştırmadan başlatmayın.
 
 
-PNR PRIMARY KEY varchar
-bus_company 
-bus_time
-origin
-destination 
-price
-time
-date
-list_id FOREIGN KEY
 
 
 
+
+
+delete ticket
+turizme göre comments
+
+tıkladığında ticket bilgileri
