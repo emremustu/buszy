@@ -488,17 +488,17 @@ class Comments(models.Model):
     def seeComments(company):
         query = """
         SELECT 
-            ticket_id, 
-            comment_id,
-            rate,
-            user_id, 
-            user_comment, 
-            origin, 
-            destination, 
-            voyage_date, 
-            voyage_time, 
-            seat, 
-            company
+            tickets.ticket_id, 
+             comments.comment_id,
+              comments.rate,
+             comments.user_id, 
+            comments.user_comment, 
+        tickets.origin, 
+        tickets.destination, 
+        tickets.voyage_date, 
+        tickets.voyage_time, 
+        tickets.seat, 
+        tickets.company
         FROM comments 
         JOIN tickets USING (ticket_id)
         WHERE company = %s
