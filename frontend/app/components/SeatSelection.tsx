@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -11,6 +12,7 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
     const [seatGenderMap, setSeatGenderMap] = useState<{ [key: number]: 'male' | 'female' }>({});
     const [pendingSeat, setPendingSeat] = useState<number | null>(null);
     const [occupiedSeats, setOccupiedSeats] = useState<{ [key: number]: string }>({});
+    const [hoveredSeat, setHoveredSeat] = useState<number | null>(null); // State to track hovered seat
     const router = useRouter();
 
     useEffect(() => {
@@ -110,10 +112,15 @@ const SeatSelection = ({ voyage, voyageData }: SeatSelectionProps) => {
                         ? 'bg-pink-400'
                         : 'bg-gray-200';
 
+        // Add hover effect dynamically
+        const hoverClass = hoveredSeat === seatNumber ? 'hover:scale-110 hover:bg-opacity-60' : '';
+
         return (
             <button
                 onClick={() => !isOccupied && handleSeatClick(seatNumber)}
-                className={`w-12 h-12 rounded-md border flex items-center justify-center text-xs font-bold ${colorClass}`}
+                onMouseEnter={() => setHoveredSeat(seatNumber)} // On hover, set hovered seat
+                onMouseLeave={() => setHoveredSeat(null)} // Remove hover effect
+                className={`w-12 h-12 rounded-md border flex items-center justify-center text-xs font-bold ${colorClass} ${hoverClass}`}
                 disabled={isOccupied}
             >
                 {seat}
