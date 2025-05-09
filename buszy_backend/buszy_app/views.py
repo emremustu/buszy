@@ -448,7 +448,7 @@ def seeComments(request):
 
             result = Comments.seeComments(company)
 
-            return JsonResponse({"status": "success","comment":result})
+            return JsonResponse({"success":True,"comment":result})
 
 
         except Exception as e:
@@ -485,3 +485,16 @@ def deleteAccount(request):
 
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})        
+        
+
+@csrf_exempt
+def addOrUptadeImage(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            user_id=data.get('user_id')
+            image_blob=data.get('image_blob')
+
+            User.addProfilePicture(user_id,image_blob)
+        except Exception as e:
+            return JsonResponse({"success":False,"message":f"Error: {str(e)}"})          

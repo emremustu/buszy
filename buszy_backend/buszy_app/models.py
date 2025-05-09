@@ -75,8 +75,19 @@ class User(models.Model):
         """
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute(query, [user_id,user_id,user_id])          
-    
+            cursor.execute(query, [user_id,user_id,user_id])    
+
+
+    @staticmethod
+    def addProfilePicture(user_id,image_blob):
+        query="""
+        UPDATE buszy_app_user SET image = %s WHERE id=%s;
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query,[image_blob,user_id])
+
+
 
 
 
