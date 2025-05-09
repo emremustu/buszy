@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import SeatSelection from "../components/SeatSelection";
+import SeatSelection from "../components/SeatSelection"; // yeni SeatSelection bileşeni
 
 const TripsPage = () => {
   const searchParams = useSearchParams();
@@ -70,7 +70,24 @@ const TripsPage = () => {
           voyages.map((voyage, index) => (
             <div key={index} className="mb-10">
               <section className="bus-card bg-white flex items-center justify-between p-6 rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-300">
-                <Image src="/assets/images/kamilkoc.png" alt="Bus Company Logo" width={100} height={50} />
+
+                {/* Otobüs logosu */}
+                <div className="bus-logo w-20 h-12">
+                  {voyage.image && voyage.image !== "null" ? (
+                    <img
+                      src={`data:image/png;base64,${voyage.image}`}
+                      alt={voyage.bus_company}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <img
+                      src="/assets/images/default_bus_logo.png"
+                      alt="Default Bus Logo"
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+
                 <div className="bus-info flex-1 ml-8">
                   <div className="seat-info flex items-center justify-center gap-2 mb-1">
                     <Image src="/assets/images/seat-icon.png" alt="Seat Icon" width={50} height={50} />
