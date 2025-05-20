@@ -177,9 +177,64 @@ def deleteTicket(request):
         ticket_id=data.get('ticket_id')
 
         try:
-            Tickets.deleteTicket(ticket_id)
+            data=Tickets.getTicketsByTicketId(ticket_id)
+            ticket = data[0]  # Extract the first (and assumed only) result
+            origin = ticket['origin']
+            destination = ticket['destination']  # Note: your original code had a typo here: 'destiantion'
+            company = ticket['company']
+            date = ticket['voyage_date']
+            time = ticket['voyage_time']
+            seat = ticket['seat']
 
-            return JsonResponse({"success":True,"message":"Successfully Deleted"})
+
+
+            voyage_listing_data = VoyageListing.getVoyageListByOriginDestinationCompany(origin,destination,company)
+
+            print("Voyage Listing Data:", voyage_listing_data)  # Debug print
+
+            timeOfEnd_location = None
+            dateOfEnd_location = None
+
+
+            for a in voyage_listing_data:
+                if a[3] == destination:
+                    timeOfEnd_location = a[2]
+                    dateOfEnd_location = a[6]
+                    break
+
+            # If no time or date was found for the end location
+            if not timeOfEnd_location or not dateOfEnd_location:
+                for a in voyage_listing_data:
+                                Seats.updateSeat(a[7], a[3], a[4], seat, "Avaliable", None)
+
+                
+                Tickets.deleteTicket(ticket_id)
+                return JsonResponse({"success":True,"message":"Successfully Deleted"})                  
+            else:
+                print(f"Time for end location: {timeOfEnd_location}, Date for end location: {dateOfEnd_location}")  # Debug print
+
+                # Convert the given date and time to datetime objects
+                datetime1 = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+                datetime2 = datetime.strptime(f"{dateOfEnd_location} {timeOfEnd_location}", "%Y-%m-%d %H:%M:%S")
+
+                # Process each seat number and gender from the seat_numbers list
+                for a in voyage_listing_data:
+                    dateofVoyage = datetime.strptime(f"{a[6]} {a[2]}", "%Y-%m-%d %H:%M:%S")
+                    if datetime1 <= dateofVoyage < datetime2:
+                                Seats.updateSeat(a[7], a[3], a[4], seat, "Avaliable", None)
+
+
+
+                Tickets.deleteTicket(ticket_id)
+                # Return a success response
+                return JsonResponse({"success":True,"message":"Successfully Deleted"})
+            
+
+
+
+
+
+            
         except Exception as e:
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
 
@@ -192,6 +247,7 @@ def get_voyage_listing_byPlate(request):
 
         try:    
             voyagelisting_data = VoyageListing.getVoyageListByPlate(plate)
+            print(voyagelisting_data)
             return JsonResponse({"success":True,"voyage_list":voyagelisting_data})
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error:{str(e)}"})
@@ -410,6 +466,7 @@ def getTickets(request):
         except Exception as e:
             return JsonResponse({"success":False,"message":f"Error: {str(e)}"})    
         
+
 
 @csrf_exempt
 def getTicketsByUserId(request):

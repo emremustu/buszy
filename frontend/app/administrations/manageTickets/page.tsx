@@ -11,9 +11,32 @@ const TicketPage = () => {
   const [tickets, setTickets] = useState<any[]>([]);
   const [date, setDate] = useState('');
 
-  const handleDelete = (id: number) => {
-    console.log("Silinecek bilet ID:", id);    
-  };
+  const handleDelete = async (id: number) => {
+  if (!id) return;
+
+  try {
+    const response = await fetch('http://localhost:8000/api/delete-ticket', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ticket_id: id })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert('Ticket deleted successfully!');
+      // Listeden silinen bileti kaldır
+      setTickets((prev) => prev.filter(ticket => ticket[0] !== id));
+    } else {
+      alert(result.message || 'Failed to delete ticket.');
+    }
+  } catch (error) {
+    console.error('Error deleting ticket:', error);
+    alert('An error occurred while deleting the ticket.');
+  }
+};
+
   
 
   const handleSearch = async (e: React.FormEvent) => {

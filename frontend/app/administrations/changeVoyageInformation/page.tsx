@@ -43,10 +43,11 @@ const reportPage = () => {
             const result = await response.json();
 
             if (result.success) {
-
+                
                 setResponseMessage("Voyage:");
                 setVoyageData(result.voyage_list);
             } else {
+                
                 setResponseMessage(result.message || "An error occurred!");
                 setVoyageData([]);
             }
@@ -126,11 +127,11 @@ const reportPage = () => {
                 <Navbar />
                 <div className='flex flex-col items-center mt-5'>
                     <div className="w-full space-y-4 max-w-md p-6 bg-white rounded-lg shadow-lg">
-                        <p className="flex items-center gap-2">
-                            <p>Change Voyage Information</p>
-                            <ArrowsRightLeftIcon className="w-4 h-4 text-black"></ArrowsRightLeftIcon>
-                            
-                        </p>
+                        <div className="flex items-center gap-2">
+    <p>Change Voyage Information</p>
+    <ArrowsRightLeftIcon className="w-4 h-4 text-black" />
+</div>
+
                         <form onSubmit={handleSubmit}>
                             <input
                                 type="text"
@@ -193,6 +194,7 @@ const reportPage = () => {
                                     )}
                                 </div>
                             </form>
+
                         </div>
                     ))}
 

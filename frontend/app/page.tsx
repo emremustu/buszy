@@ -216,14 +216,14 @@ const MainPage = () => {
                 <div className=' rounded-4xl  bg-gray-200 placeholder:text-black  '>
                   <input
                     type="date"
-                    min={new Date().toISOString().split("T")[0]} // ✅ En erken bugün
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className={`w-full h-14 px-4  rounded-4xl text-center  
-        focus:outline-none focus:ring-2 focus:ring-primary   appearance-none
-        ${date ? "text-black" : "text-transparent"}`}
+                    className={`w-full h-14 px-4 rounded-4xl text-center  
+    focus:outline-none focus:ring-2 focus:ring-primary appearance-none
+    ${date ? "text-black" : "text-transparent"}`}
                     onFocus={(e) => e.target.showPicker()}
                   />
+
                 </div>
               </div>
 

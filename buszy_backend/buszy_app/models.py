@@ -252,7 +252,7 @@ class VoyageListing(models.Model):
     @staticmethod
     def getVoyageListByPlate(plate):
         query = """
-        SELECT * FROM voyage_listing WHERE bus_plate=%s;
+        SELECT list_id, bus_company, bus_time, bus_list_begin, bus_list_end, bus_list_price, voyage_date, bus_plate FROM voyage_listing WHERE bus_plate=%s;
         """
         from django.db import connection
         with connection.cursor() as cursor:
@@ -267,6 +267,26 @@ class VoyageListing(models.Model):
         else:
             return None
 
+    @staticmethod
+    def getVoyageListByOriginDestinationCompany(origin,destination,company):
+        query = """
+        SELECT * FROM voyage_listing WHERE bus_list_begin=%s AND bus_list_end=%s AND bus_company=%s ;
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query, [origin,destination,company])
+            voyage_data = cursor.fetchall()
+
+        # Log all the fetched data to check the format
+        #print("Fetched voyage data:", voyage_data)
+
+        if voyage_data:
+            return voyage_data
+        else:
+            return None
+
+
+    
 
     
 
@@ -391,7 +411,7 @@ class Tickets(models.Model):
     @staticmethod
     def deleteTicket(ticket_id):
         query="""
-        DELETE * FROM tickets WHERE ticket_id=%s;
+        DELETE FROM tickets WHERE ticket_id=%s;
         """
         from django.db import connection
         with connection.cursor() as cursor:
@@ -437,6 +457,23 @@ class Tickets(models.Model):
                 return data
             else:
                 return None       
+            
+    @staticmethod
+    def getTicketsByTicketId(ticket_id):
+        query="""
+        SELECT ticket_id,user_id,origin,destination, voyage_date, voyage_time, seat, company FROM tickets WHERE ticket_id = %s
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(query, [ticket_id])
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+
+        if rows:
+            result = [dict(zip(columns, row)) for row in rows]
+            return result
+        else:
+            return None                
 
 
 
