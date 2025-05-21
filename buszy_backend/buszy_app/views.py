@@ -124,35 +124,18 @@ def get_voyage(request):
     if request.method == 'POST':
         data = json.loads(request.body)
 
-        bus_id = data.get('bus_id')
         bus_plate = data.get('bus_plate')
 
-        # Eğer ikisi de None ise hata döndür
-        if bus_id is None and bus_plate is None:
-            return JsonResponse({"success": False, "message": "bus_id ve bus_plate değerlerinden en az birini girin!"})
+        if not bus_plate:
+            return JsonResponse({"success": False, "message": "Please provide a bus_plate."})
 
-        # Eğer bus_id verilmişse, bus_id ile sorgu yap
-        elif bus_id is not None:
-            try:
-                bus_id_int = int(bus_id)  # Bus ID'yi int türüne dönüştür
-                voyage = Voyage.select_voyage(bus_id_int)
-                if voyage:
-                    return JsonResponse({"success": True, "voyage": voyage})
-                else:
-                    return JsonResponse({"success": False, "message": "Bu bus_id ile ilgili bir sefer bulunamadı."})
-            except ValueError:
-                return JsonResponse({"success": False, "message": "Geçersiz bus_id değeri."})
+        voyage = Voyage.select_voyagebyplate(bus_plate)
+        if voyage:
+            return JsonResponse({"success": True, "voyage": voyage})
+        else:
+            return JsonResponse({"success": False, "message": "No voyage found for the given bus_plate."})
 
-        # Eğer bus_plate verilmişse, bus_plate ile sorgu yap
-        elif bus_plate is not None:
-            voyage = Voyage.select_voyagebyplate(bus_plate)
-            if voyage:
-                return JsonResponse({"success": True, "voyage": voyage})
-            else:
-                return JsonResponse({"success": False, "message": "Bu bus_plate ile ilgili bir sefer bulunamadı."})
-
-    return JsonResponse({"success": False, "message": "Geçersiz istek türü!"})
-
+    return JsonResponse({"success": False, "message": "Invalid request method."})
 
 @csrf_exempt
 def get_voyage_listing(request):

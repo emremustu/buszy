@@ -1,12 +1,13 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Navbar from "../components/Navbar";  // Navbar'ı ekliyoruz
-import Footer from "../components/Footer"; // Footer'ı ekliyoruz
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const TicketPage = () => {
     const searchParams = useSearchParams();
+    const router = useRouter();
 
     const seatsParam = searchParams.get('seats');
     const origin = searchParams.get('origin');
@@ -19,15 +20,15 @@ const TicketPage = () => {
 
     const [userId, setUserId] = useState<string | null>(null);
     const [seats, setSeats] = useState<{ seat: number; gender: string }[]>([]);
+    const [modal, setModal] = useState<{ open: boolean; message: string; type: 'success' | 'error' }>({ open: false, message: '', type: 'success' });
 
     useEffect(() => {
-        if (localStorage.getItem('rememberMe') === 'true') {
-            const storedUserId = localStorage.getItem('userId');
-            setUserId(storedUserId);
-        } else {
-            const storedUserId = sessionStorage.getItem('userId');
-            setUserId(storedUserId);
-        }
+        const storedUserId =
+            localStorage.getItem('rememberMe') === 'true'
+                ? localStorage.getItem('userId')
+                : sessionStorage.getItem('userId');
+
+        setUserId(storedUserId);
     }, []);
 
     useEffect(() => {
@@ -44,7 +45,7 @@ const TicketPage = () => {
         e.preventDefault();
 
         if (!userId) {
-            alert('User ID is not available!');
+            setModal({ open: true, message: 'User ID is not available!', type: 'error' });
             return;
         }
 
@@ -71,13 +72,14 @@ const TicketPage = () => {
             const result = await response.json();
 
             if (result.status === 'success') {
-                alert('Biletleme işlemi başarılı!');
+                setModal({ open: true, message: 'Ticketing successful! Redirecting to home...', type: 'success' });
+                setTimeout(() => router.push('/'), 2000); // Redirect after 2 seconds
             } else {
-                alert(result.message || 'Bir hata oluştu!');
+                setModal({ open: true, message: result.message || 'An error occurred!', type: 'error' });
             }
         } catch (error) {
             console.error('Error during fetch:', error);
-            alert('Bir hata oluştu, lütfen tekrar deneyin.');
+            setModal({ open: true, message: 'An error occurred. Please try again.', type: 'error' });
         }
     };
 
@@ -85,7 +87,8 @@ const TicketPage = () => {
 
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-br from-green-100 to-blue-100">
-            <Navbar /> {/* Navbar'ı üst kısma sabitledik */}
+            <Navbar />
+
             <div className="flex-grow flex items-center justify-center py-12 px-4">
                 <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-10 border border-gray-200 animate-fade-in">
                     <h1 className="text-4xl font-bold text-center text-green-700 mb-6">🎫 Ticket Summary</h1>
@@ -135,14 +138,35 @@ const TicketPage = () => {
                         </div>
 
                         <form onSubmit={handleSubmit}>
-                            <button type="submit" className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full">
+                            <button type="submit" className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full mt-6">
                                 CREATE
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
-            <Footer /> {/* Footer'ı alt kısma sabitledik */}
+
+            <Footer />
+
+            {/* Modal Popup */}
+            {modal.open && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div className={`bg-white rounded-xl p-6 shadow-lg max-w-sm w-full ${modal.type === 'success' ? 'border-green-500' : 'border-red-500'} border-t-4`}>
+                        <h3 className={`text-xl font-bold mb-4 ${modal.type === 'success' ? 'text-green-700' : 'text-red-700'}`}>
+                            {modal.type === 'success' ? 'Success' : 'Error'}
+                        </h3>
+                        <p className="text-gray-700">{modal.message}</p>
+                        <div className="mt-6 text-right">
+                            <button
+                                onClick={() => setModal({ ...modal, open: false })}
+                                className="text-sm text-blue-500 hover:underline"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -260,9 +260,9 @@ const MyTicketsPage = () => {
                       >
                         Cancel Ticket
                       </button>
-                      <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                      {/* <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
                         Mark as Open
-                      </button>
+                      </button> */}
                     </div>
                   )}
                 </div>

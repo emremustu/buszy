@@ -142,10 +142,10 @@ const ProfilePage = () => {
                   <TrashIcon className="h-5 w-5" />
                   Delete Account
                 </button>
-                <button className="cursor-pointer bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded flex items-center gap-2">
+                {/* <button className="cursor-pointer bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded flex items-center gap-2">
                   <EnvelopeIcon className="h-5 w-5" />
                   Contact Us
-                </button>
+                </button> */}
               </div>
             </div>
           ) : (

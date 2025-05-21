@@ -40,6 +40,7 @@ const MainPage = () => {
   const toDropdownRef = useRef<HTMLUListElement | null>(null);
   const isFocused = false;
   const [date, setDate] = useState<string>("");
+  const today = new Date().toISOString().split('T')[0];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,11 +122,12 @@ const MainPage = () => {
 
   return (
     <>
+    <div className='flex flex-col h-screen justify-center'>
       <Navbar />
 
       <div className="flex flex-col w-full justify-center items-center">
 
-        <div className='flex flex-col justify-center items-center shadow-2xl pt-20 pb-20 px-30 rounded-4xl mt-30'>
+        <div className='flex flex-col justify-center items-center shadow-2xl pt-20 pb-20 px-30 rounded-4xl mt-40'>
           <form onSubmit={handleSubmit}>
             <span className='font-semibold text-3xl mb-10'>Where do you want to go?</span>
 
@@ -217,6 +219,7 @@ const MainPage = () => {
                   <input
                     type="date"
                     value={date}
+                    min={today}
                     onChange={(e) => setDate(e.target.value)}
                     className={`w-full h-14 px-4 rounded-4xl text-center  
     focus:outline-none focus:ring-2 focus:ring-primary appearance-none
@@ -234,15 +237,15 @@ const MainPage = () => {
             <button className='rounded-full font-sans font-semibold text-white text-2xl bg-primarybr py-2 px-4 mt-10  hover:text-primarybr  hover:bg-white cursor-pointer transition duration-300' >Find Bus!</button>
           </form>
         </div>
+                    
+                    
 
-
-        <p className='w-[50rem] my-20 text-center'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eu volutpat risus. Donec eu lobortis est, sit amet iaculis ex. Aenean et condimentum felis. In hac habitasse platea dictumst. Donec bibendum sem felis, nec faucibus lectus bibendum quis. Donec quam massa, faucibus eu dignissim at, fringilla vel dolor. In ac fringilla est, a efficitur magna.
-
-          .</p>
 
 
       </div >
+      <div className='mt-auto'></div>
       <Footer />
+      </div>
     </>
   );
 };
